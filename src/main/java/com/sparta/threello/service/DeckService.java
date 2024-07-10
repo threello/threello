@@ -1,6 +1,7 @@
 package com.sparta.threello.service;
 
 import com.sparta.threello.dto.DeckRequestDto;
+import com.sparta.threello.dto.DeckResponseDto;
 import com.sparta.threello.dto.ResponseDataDto;
 import com.sparta.threello.entity.Deck;
 import com.sparta.threello.enums.ErrorType;
@@ -9,6 +10,7 @@ import com.sparta.threello.exception.CustomException;
 import com.sparta.threello.repository.BoardRepository;
 import com.sparta.threello.repository.DeckRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +22,7 @@ public class DeckService {
     private final DeckRepository deckRepository;
     private final BoardRepository boardRepository;
 
-    public ResponseDataDto<Deck> createDeck(long id, DeckRequestDto deckRequestDto) {
+    public ResponseDataDto<DeckResponseDto> createDeck(long id, DeckRequestDto deckRequestDto) {
         /*
         User user = userDetails.getUser();
 
@@ -39,6 +41,16 @@ public class DeckService {
 
         deckRepository.save(deck);
 
-        return new ResponseDataDto<>(ResponseStatus.BOARD_CREATE_SUCCESS, deck);
+        return new ResponseDataDto<>(ResponseStatus.DECK_CREATE_SUCCESS,
+                new DeckResponseDto(deck.getId(),
+                        deck.getBoard().getId(),
+                        deck.getTitle(),
+                        deck.getPosition(),
+                        deck.getCreatedAt(),
+                        deck.getModifiedAt()));
     }
+
+//    public Page<ResponseDataDto<Deck>> getDeckList(int page) {
+//
+//    }
 }
