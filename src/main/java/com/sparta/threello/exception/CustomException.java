@@ -14,4 +14,9 @@ public class CustomException extends RuntimeException {
         this.result = "ERROR";
         this.errorType = errorType;
     }
+
+    //사용 예시
+    // if(user.isEmpty()){
+    //    throw new CustomException(ErrorType.NOT_FOUND_USER);
+    // }
 }
