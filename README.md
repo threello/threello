@@ -1,4 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=waving&color=1A4FD6&height=300&section=header&text=MatDil&fontColor=ffffff&fontSize=90)
+![header](https://capsule-render.vercel.app/api?type=waving&color=AE2AFF&height=300&section=header&text=Threello&fontColor=ffffff&fontSize=90)
 
 # SpartaNbCamp-Threello Team Project
 칸반(Kanban)은 반복적인 프로세스의 단계를 명확히 나누는 프로젝트 관리 방식입니다. <br>
