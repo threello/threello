@@ -1,5 +1,6 @@
 package com.sparta.threello.entity;
 
+import com.sparta.threello.enums.CardStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,10 +20,18 @@ public class Card extends Timestamped{
     private String title;
 
     @Column(nullable = false)
-    private String card_deck_position;
+    private Long position;
 
+    @Column(nullable = false)
+    private CardStatus card_status = CardStatus.PROCESSING;
+
+    //deck 의 title 값이 들어가야함
+    @Column(nullable = false)
+    private String cardDeckPosition;
+
+    //마감일자
     @Column
-    private LocalDateTime endAt;
+    private LocalDateTime dueAt;
 
     //Deck 과 join
     @ManyToOne
