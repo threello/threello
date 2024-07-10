@@ -1,9 +1,10 @@
 package com.sparta.threello.entity;
 
+import com.sparta.threello.enums.UserStatus;
+import com.sparta.threello.enums.UserType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.usertype.UserType;
 
 import java.util.ArrayList;
 import java.util.List;
