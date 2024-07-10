@@ -86,14 +86,7 @@ feature/secuity
 <br>
 
 ### ERD 
-<br>
-
-추후에 추가하겠습니다.
-
-<br>
-<br>
-<br>
-<br>
+<img alt="image" src="https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F83c75a39-3aba-4ba4-a792-7aefe4b07895%2Fc84a9e9e-5c7d-41fd-8d3d-9205c3a598db%2FUntitled.png?table=block&id=b1eac13b-4523-4e58-a2c7-ec749a49136a&spaceId=83c75a39-3aba-4ba4-a792-7aefe4b07895&width=2000&userId=2f97810a-762a-4abe-8ef0-dbd0292b5a49&cache=v2">
 
 ### API Documentation
 추후에 추가하겠습니다.
