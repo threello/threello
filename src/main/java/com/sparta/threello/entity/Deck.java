@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -30,4 +31,10 @@ public class Deck extends Timestamped{
     //Card와 양방향
     @OneToMany(mappedBy = "deck",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cardList = new ArrayList<>();
+
+    public Deck(String title, Long position, Optional<Board> board) {
+        this.title = title;
+        this.position = position;
+        this.board = board.get();
+    }
 }
