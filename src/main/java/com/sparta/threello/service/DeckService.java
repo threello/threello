@@ -17,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Transactional
 @RequiredArgsConstructor
 @Service
@@ -25,6 +27,8 @@ public class DeckService {
     private final DeckRepository deckRepository;
     private final BoardRepository boardRepository;
 
+    /** [createDeck()] 덱 생성
+     **/
     public ResponseDataDto<DeckResponseDto> createDeck(long id, DeckRequestDto deckRequestDto) {
         /*
         User user = userDetails.getUser();
@@ -48,6 +52,8 @@ public class DeckService {
                 new DeckResponseDto(deck));
     }
 
+    /** [getDeckList()] 덱 전체 조회
+     **/
     public ResponseDataDto<Page<DeckResponseDto>> getDeckList(int page, int size, Long id) {
         // 포지션 순으로 정렬
         Sort.Direction direction = Sort.Direction.DESC;
@@ -58,11 +64,28 @@ public class DeckService {
                 deckRepository.findAllByBoardId(id, pageable).map(DeckResponseDto::new));
     }
 
+    /** [getDeck()] 덱 조회
+     **/
     public ResponseDataDto<DeckResponseDto> getDeck(Long boardId, Long deckId) {
 
         Deck deck = deckRepository.findByIdAndBoardId(deckId,boardId);
 
-        return new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS,
-                new DeckResponseDto(deck));
+        return new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS, new DeckResponseDto(deck));
+    }
+
+    /** [updateDeck()] 덱 수정
+     **/
+    public ResponseDataDto<DeckResponseDto> updateDeck(Long boardId, Long deckId, String title) {
+
+        Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
+
+        if (optionalDeck.isPresent()) {
+            Deck deck = optionalDeck.get();
+            deck.updateTitle(title);
+            deckRepository.save(deck);  // 변경사항을 저장
+            return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
+        } else {
+            throw new IllegalArgumentException("Deck not found");
+        }
     }
 }

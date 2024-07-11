@@ -49,9 +49,22 @@ public class DeckController {
      * @param deckId 덱아이디
      * @return status.code, message
      **/
-    @GetMapping("{deckId}")
+    @GetMapping("/{deckId}")
     public ResponseEntity<ResponseDataDto<DeckResponseDto>> getDeck(@PathVariable Long boardId, @PathVariable Long deckId) {
         ResponseDataDto<DeckResponseDto> responseDto = deckService.getDeck(boardId, deckId);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS, responseDto).getData());
     }
+
+    /**
+     * 덱 수정
+     * @param boardId 보드아이디
+     * @param deckId 덱아이디
+     * @return status.code, message
+     **/
+    @PutMapping("/{deckId}")
+    public ResponseEntity<ResponseDataDto<DeckResponseDto>> updateDeck(@PathVariable Long boardId, @PathVariable Long deckId, @RequestBody String title) {
+        ResponseDataDto<DeckResponseDto> responseDto = deckService.updateDeck(boardId, deckId, title);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, responseDto).getData());
+    }
+
 }
