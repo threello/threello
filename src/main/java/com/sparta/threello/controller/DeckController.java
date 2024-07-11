@@ -1,9 +1,7 @@
 package com.sparta.threello.controller;
 
-import com.sparta.threello.dto.DeckRequestDto;
-import com.sparta.threello.dto.DeckResponseDto;
-import com.sparta.threello.dto.ResponseDataDto;
-import com.sparta.threello.dto.ResponseMessageDto;
+import com.sparta.threello.dto.*;
+import com.sparta.threello.entity.Deck;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.service.DeckService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,10 @@ public class DeckController {
      * @return status.code, message
      **/
     @PostMapping
-    public ResponseEntity<ResponseDataDto<DeckResponseDto>> createDeck(@PathVariable long boardId, @RequestBody DeckRequestDto deckRequestDto/*, @AuthenticationPrincipal UserDetailsImpl authentication*/) {
+    public ResponseEntity<ResponseDataDto<DeckResponseDto>> createDeck(
+            @PathVariable long boardId,
+            @RequestBody DeckRequestDto deckRequestDto/*,
+            @AuthenticationPrincipal UserDetailsImpl authentication*/) {
         ResponseDataDto<DeckResponseDto> responseDto = deckService.createDeck(boardId, deckRequestDto/*, authentication*/);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_CREATE_SUCCESS, responseDto).getData());
     }
@@ -51,7 +52,9 @@ public class DeckController {
      * @return status.code, message
      **/
     @GetMapping("/{deckId}")
-    public ResponseEntity<ResponseDataDto<DeckResponseDto>> getDeck(@PathVariable Long boardId, @PathVariable Long deckId) {
+    public ResponseEntity<ResponseDataDto<DeckResponseDto>> getDeck(
+            @PathVariable Long boardId,
+            @PathVariable Long deckId) {
         ResponseDataDto<DeckResponseDto> responseDto = deckService.getDeck(boardId, deckId);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS, responseDto).getData());
     }
@@ -60,11 +63,15 @@ public class DeckController {
      * 덱 수정
      * @param boardId 보드아이디
      * @param deckId 덱아이디
+     * @param requestDto DeckRequestDto
      * @return status.code, message
      **/
-    @PutMapping("/{deckId}")
-    public ResponseEntity<ResponseDataDto<DeckResponseDto>> updateDeck(@PathVariable Long boardId, @PathVariable Long deckId, @RequestBody String title) {
-        ResponseDataDto<DeckResponseDto> responseDto = deckService.updateDeck(boardId, deckId, title);
+    @PatchMapping("/{deckId}")
+    public ResponseEntity<ResponseDataDto<DeckResponseDto>> updateDeck(
+            @PathVariable Long boardId,
+            @PathVariable Long deckId,
+            @RequestBody DeckRequestDto requestDto) {
+        ResponseDataDto<DeckResponseDto> responseDto = deckService.updateDeck(boardId, deckId, requestDto);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, responseDto).getData());
     }
 
@@ -81,5 +88,22 @@ public class DeckController {
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS));
     }
 
+    /**
+     * 덱 포지션 변경
+     *
+     * @param boardId 보드아이디
+     * @param deckId  덱아이디
+     * @param requestDto DeckRequestDto
+     * @return status.code, message
+     **/
+    @PatchMapping("/{deckId}/position")
+    public ResponseEntity<ResponseDataDto<DeckResponseDto>> updateDeckPosition(
+            @PathVariable Long boardId,
+            @PathVariable Long deckId,
+            @RequestBody DeckRequestDto requestDto) {
+        ResponseDataDto<DeckResponseDto> responseDto =
+                deckService.updateDeckPosition(boardId, deckId, requestDto);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, responseDto).getData());
+    }
 
 }

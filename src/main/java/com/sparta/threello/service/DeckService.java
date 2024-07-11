@@ -1,9 +1,6 @@
 package com.sparta.threello.service;
 
-import com.sparta.threello.dto.DeckRequestDto;
-import com.sparta.threello.dto.DeckResponseDto;
-import com.sparta.threello.dto.ResponseDataDto;
-import com.sparta.threello.dto.ResponseMessageDto;
+import com.sparta.threello.dto.*;
 import com.sparta.threello.entity.Deck;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.ResponseStatus;
@@ -76,15 +73,21 @@ public class DeckService {
 
     /** [updateDeck()] 덱 수정
      **/
-    public ResponseDataDto<DeckResponseDto> updateDeck(Long boardId, Long deckId, String title) {
+    public ResponseDataDto<DeckResponseDto> updateDeck(Long boardId, Long deckId, DeckRequestDto requestDto) {
 
         Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
 
         if (optionalDeck.isPresent()) {
             Deck deck = optionalDeck.get();
-            deck.updateTitle(title);
+
+            // request로 title만 받아왔을 때 업데이트
+            if(null != requestDto.getTitle() && null == requestDto.getPosition()) {
+                deck.updateTitle(requestDto.getTitle());
+            }
+
             deckRepository.save(deck);
             return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
+
         } else {
             throw new CustomException(ErrorType.NOT_FOUND_DECK);
         }
@@ -96,10 +99,36 @@ public class DeckService {
 
         Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
 
+        // userType이 MANAGER인 사용자만 삭제하도록 예외처리 로직 추가하기
+
         if (optionalDeck.isPresent()) {
             Deck deck = optionalDeck.get();
             deckRepository.delete(deck);
             return new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS);
+        } else {
+            throw new CustomException(ErrorType.NOT_FOUND_DECK);
+        }
+    }
+
+    /** [updateDeck()] 덱 포지션 변경
+     **/
+    public ResponseDataDto<DeckResponseDto> updateDeckPosition(Long boardId, Long deckId, DeckRequestDto requestDto) {
+
+        Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
+
+        // userType이 MANAGER인 사용자만 삭제하도록 예외처리 로직 추가하기
+
+        if (optionalDeck.isPresent()) {
+            Deck deck = optionalDeck.get();
+
+            // request로 position만 받아왔을 때 업데이트
+            if(null == requestDto.getTitle() && null != requestDto.getPosition()) {
+
+                deck.updatePosition(requestDto.getPosition());
+            }
+
+            deckRepository.save(deck);
+            return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
         } else {
             throw new CustomException(ErrorType.NOT_FOUND_DECK);
         }

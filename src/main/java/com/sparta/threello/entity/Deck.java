@@ -41,4 +41,8 @@ public class Deck extends Timestamped{
     public void updateTitle(String title) {
         this.title = title;
     }
+
+    public void updatePosition(Long position) {
+        this.position = position;
+    }
 }
