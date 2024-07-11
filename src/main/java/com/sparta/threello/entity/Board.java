@@ -1,5 +1,6 @@
 package com.sparta.threello.entity;
 
+import com.sparta.threello.dto.BoardRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,4 +30,14 @@ public class Board extends Timestamped{
     //Deck과 양방향
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Deck> deckList = new ArrayList<>();
+
+    public Board(BoardRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.description = requestDto.getDescription();
+    }
+
+    public void update(BoardRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.description = requestDto.getDescription();
+    }
 }
