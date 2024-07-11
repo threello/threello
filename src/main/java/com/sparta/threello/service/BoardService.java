@@ -13,6 +13,7 @@ import com.sparta.threello.repository.board.BoardRepository;
 import com.sparta.threello.repository.boardMemeber.BoardMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -80,12 +81,33 @@ public class BoardService {
             throw new CustomException(ErrorType.NOT_FOUND_BOARD);
         }
 
-        List<BoardResponseDto> ownerBoards = memberBoardMembers.stream()
+        List<BoardResponseDto> memerBoards = memberBoardMembers.stream()
                 .map(boardMember -> new BoardResponseDto(boardMember.getBoard()))
                 .toList();
 
-        return ownerBoards;
+        return memerBoards;
     }
+
+
+    /**
+     * [updateBoard] 보드 수정하기
+     * @param requestDto 수정할 내용
+     * @param loginUser 로그인한 회원 정보
+     * @return BoardResponseDto
+     **/
+    @Transactional
+    public BoardResponseDto updateBoard(Long boardId, BoardRequestDto requestDto, User loginUser) {
+        // [예외 1] - 존재하는 board인지 확인
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_BOARD));
+
+        // [예외 2 QueryDSL] - 찾은 board과 user를 통해 boardMember를 조회하는데 Owner 권한을 가지고 있는지 확인
+        boardMemberRepository.findBoardAndUserAndPermission(board.getId(), loginUser.getId());
+
+        board.update(requestDto);
+
+        return new BoardResponseDto(board);
+    }
+
 
 
     //매니저 권한이 아니면 예외처리
@@ -94,7 +116,5 @@ public class BoardService {
             throw new CustomException(ErrorType.NOT_AVAILABLE_PERMISSION);
         }
     }
-
-    //
 
 }

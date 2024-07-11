@@ -1,9 +1,11 @@
 package com.sparta.threello.controller;
 
+import com.sparta.threello.dto.BoardRequestDto;
 import com.sparta.threello.dto.BoardResponseDto;
 import com.sparta.threello.dto.ResponseDataDto;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.service.BoardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,5 +51,16 @@ public class BoardController {
 //    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getMemberBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 //        List<BoardResponseDto> responseDtoList = boardService.getMemberBoards(userDetails.getUser());
 //        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
+//    }
+
+    /**
+     * [updateBoard] 보드 수정하기
+     * @param userDetails 회원 정보
+     * @return status.code, message, responseDto
+     **/
+//    @PutMapping("/{boardId}")
+//    public ResponseEntity<ResponseDataDto<BoardResponseDto>> updateBoard(@Valid @RequestBody BoardRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        BoardResponseDto responseDto = boardService.updateBoard(boardId, requestDto, userDetails.getUser());
+//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_UPDATE_SUCCESS, responseDto));
 //    }
 }

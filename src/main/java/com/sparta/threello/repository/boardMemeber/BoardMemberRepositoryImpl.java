@@ -1,12 +1,16 @@
 package com.sparta.threello.repository.boardMemeber;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.threello.entity.Board;
 import com.sparta.threello.entity.BoardMember;
 import com.sparta.threello.entity.QBoardMember;
 import com.sparta.threello.enums.BoardMemberPermission;
+import com.sparta.threello.enums.ErrorType;
+import com.sparta.threello.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BoardMemberRepositoryImpl implements BoardMemberRepositoryCustom {
 
@@ -36,5 +40,18 @@ public class BoardMemberRepositoryImpl implements BoardMemberRepositoryCustom {
                 .where(boardMember.user.id.eq(userId)
                         .and(boardMember.permission.eq(BoardMemberPermission.MEMBER)))
                 .fetch();
+    }
+
+    @Override
+    public BoardMember findBoardAndUserAndPermission(Long boardId, Long userId) {
+        QBoardMember boardMember = QBoardMember.boardMember;
+
+        BoardMember getBoardMember = queryFactory.selectFrom(boardMember)
+                .where(boardMember.user.id.eq(userId)
+                        .and(boardMember.board.id.eq(boardId)
+                                .and(boardMember.permission.eq(BoardMemberPermission.OWNER)))
+                )
+                .fetchFirst();
+        return Optional.ofNullable(getBoardMember).orElseThrow(() -> new CustomException(ErrorType.NOT_AVAILABLE_PERMISSION));
     }
 }

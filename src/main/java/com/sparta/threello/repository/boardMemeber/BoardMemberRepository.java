@@ -1,7 +1,9 @@
 package com.sparta.threello.repository.boardMemeber;
 
+import com.sparta.threello.entity.Board;
 import com.sparta.threello.entity.BoardMember;
 import com.sparta.threello.entity.User;
+import com.sparta.threello.enums.BoardMemberPermission;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
