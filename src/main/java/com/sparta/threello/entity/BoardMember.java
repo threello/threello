@@ -30,8 +30,8 @@ public class BoardMember extends Timestamped{
     @Column(nullable = false)
     private BoardMemberPermission permission;
 
-    public BoardMember(User loginUser, Board board, BoardMemberPermission permission) {
-        this.user = loginUser;
+    public BoardMember(User user, Board board, BoardMemberPermission permission) {
+        this.user = user;
         this.board = board;
         this.permission = permission;
     }

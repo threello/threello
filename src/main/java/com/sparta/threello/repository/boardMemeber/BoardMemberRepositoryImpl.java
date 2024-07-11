@@ -44,7 +44,7 @@ public class BoardMemberRepositoryImpl implements BoardMemberRepositoryCustom {
     }
 
     @Override
-    public BoardMember findBoardAndUserAndPermission(Long boardId, Long userId) {
+    public BoardMember findBoardMemberByBoardAndUserAndPermission(Long boardId, Long userId) {
         QBoardMember boardMember = QBoardMember.boardMember;
 
         BoardMember getBoardMember = queryFactory.selectFrom(boardMember)

@@ -1,9 +1,6 @@
 package com.sparta.threello.controller;
 
-import com.sparta.threello.dto.BoardRequestDto;
-import com.sparta.threello.dto.BoardResponseDto;
-import com.sparta.threello.dto.ResponseDataDto;
-import com.sparta.threello.dto.ResponseMessageDto;
+import com.sparta.threello.dto.*;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.service.BoardService;
 import jakarta.validation.Valid;
@@ -11,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/boards")
@@ -73,7 +68,19 @@ public class BoardController {
      **/
 //    @DeleteMapping("/{boardId}")
 //    public ResponseEntity<ResponseMessageDto> deleteBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        BoardResponseDto responseDto = boardService.deleteBoard(boardId, userDetails.getUser());
+//        boardService.deleteBoard(boardId, userDetails.getUser());
 //        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_DELETE_SUCCESS));
+//    }
+
+    /**
+     * [inviteBoardMember] 보드 초대하기
+     * @param userDetails 회원 정보
+     * @param boardId     보드 아이디
+     * @return status.code, message
+     **/
+//    @PostMapping("/{boardId}/invite")
+//    public ResponseEntity<ResponseMessageDto> inviteBoardMember(@Valid @RequestBody InviteRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        boardService.inviteBoardMember(requestDto, boardId, userDetails.getUser());
+//        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_INVITE_MEMBER_SUCCESS));
 //    }
 }

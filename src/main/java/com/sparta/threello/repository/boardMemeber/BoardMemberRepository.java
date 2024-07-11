@@ -10,4 +10,6 @@ import java.util.Optional;
 
 public interface BoardMemberRepository extends JpaRepository<BoardMember, Long>, BoardMemberRepositoryCustom {
     Optional<Long> getBoardByUserId(Long id);
+
+    Optional<BoardMember> findByBoardIdAndUserId(Long boardId, Long userId);
 }
