@@ -34,6 +34,8 @@ public class QBoardMember extends EntityPathBase<BoardMember> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> modifiedAt = _super.modifiedAt;
 
+    public final EnumPath<com.sparta.threello.enums.BoardMemberPermission> permission = createEnum("permission", com.sparta.threello.enums.BoardMemberPermission.class);
+
     public final QUser user;
 
     public QBoardMember(String variable) {
