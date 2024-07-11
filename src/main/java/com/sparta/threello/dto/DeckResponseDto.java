@@ -1,5 +1,6 @@
 package com.sparta.threello.dto;
 
+import com.sparta.threello.entity.Deck;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -18,17 +19,14 @@ public class DeckResponseDto {
 
     private LocalDateTime modifiedAt;
 
-    public DeckResponseDto(Long id,
-                           Long board_id,
-                           String title,
-                           Long position,
-                           LocalDateTime createdAt,
-                           LocalDateTime modifiedAt) {
-        this.id = id;
-        this.board_id = board_id;
-        this.title = title;
-        this.position = position;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+
+    public DeckResponseDto(Deck deck) {
+        this.id = deck.getId();
+        this.board_id = deck.getBoard().getId();
+        this.title = deck.getTitle();
+        this.position = deck.getPosition();
+        this.createdAt = deck.getCreatedAt();
+        this.modifiedAt = deck.getModifiedAt();
     }
+
 }

@@ -11,6 +11,9 @@ import com.sparta.threello.repository.BoardRepository;
 import com.sparta.threello.repository.DeckRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,15 +45,17 @@ public class DeckService {
         deckRepository.save(deck);
 
         return new ResponseDataDto<>(ResponseStatus.DECK_CREATE_SUCCESS,
-                new DeckResponseDto(deck.getId(),
-                        deck.getBoard().getId(),
-                        deck.getTitle(),
-                        deck.getPosition(),
-                        deck.getCreatedAt(),
-                        deck.getModifiedAt()));
+                new DeckResponseDto(deck));
     }
 
-//    public Page<ResponseDataDto<Deck>> getDeckList(int page) {
-//
-//    }
+    public ResponseDataDto<Page<DeckResponseDto>> getDeckList(int page, int size, Long id) {
+        // 포지션 순으로 정렬
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "position");
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return new ResponseDataDto<>(ResponseStatus.DECKS_READ_SUCCESS,
+                deckRepository.findAllByBoardId(id, pageable).map(DeckResponseDto::new));
+    }
+
 }
