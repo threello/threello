@@ -58,4 +58,11 @@ public class DeckService {
                 deckRepository.findAllByBoardId(id, pageable).map(DeckResponseDto::new));
     }
 
+    public ResponseDataDto<DeckResponseDto> getDeck(Long boardId, Long deckId) {
+
+        Deck deck = deckRepository.findByIdAndBoardId(deckId,boardId);
+
+        return new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS,
+                new DeckResponseDto(deck));
+    }
 }

@@ -5,7 +5,6 @@ import com.sparta.threello.dto.DeckResponseDto;
 import com.sparta.threello.dto.ResponseDataDto;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.service.DeckService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -44,5 +43,15 @@ public class DeckController {
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECKS_READ_SUCCESS, responseDto).getData());
     }
 
-
+    /**
+     * 덱 조회
+     * @param boardId 보드아이디
+     * @param deckId 덱아이디
+     * @return status.code, message
+     **/
+    @GetMapping("{deckId}")
+    public ResponseEntity<ResponseDataDto<DeckResponseDto>> getDeck(@PathVariable Long boardId, @PathVariable Long deckId) {
+        ResponseDataDto<DeckResponseDto> responseDto = deckService.getDeck(boardId, deckId);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS, responseDto).getData());
+    }
 }
