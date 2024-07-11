@@ -20,6 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.sparta.threello.jwt.JwtUtil.BEARER_PREFIX;
+
 @Slf4j(topic = "JWT 인가 필터")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
@@ -27,7 +29,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsImpl userDetailsService, UserRepository userRepository) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
@@ -99,7 +101,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String email = accessTokenClaims.getSubject();
 
         // 데이터베이스에서 사용자 정보 조회
-        User user = userRepository.findByUserId(email).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
         assert user != null;
         log.info("user ID: {}", user.getEmail());
         log.info("user token: {}", user.getRefreshToken().substring(BEARER_PREFIX.length()));
@@ -124,7 +126,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
         String email = refreshTokenClaims.getSubject();
 
-        User user = userRepository.findByUserId(email).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
         if (user != null && refreshToken.equals(user.getRefreshToken())) {
             String newAccessToken = jwtUtil.createAccessToken(email);
             res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
@@ -141,7 +143,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
         String email = accessTokenClaims.getSubject();
 
-        User user = userRepository.findByUserId(email).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
             String newRefreshToken = jwtUtil.createRefreshToken(email);
             res.addHeader("Refresh-Token", newRefreshToken);
@@ -161,7 +163,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // Refresh Token을 DB에 저장하는 메서드
     private void saveRefreshTokenToDatabase(String email, String newRefreshToken) {
-        User user = userRepository.findByUserId(email).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
             user.setRefreshToken(newRefreshToken);
             userRepository.save(user);

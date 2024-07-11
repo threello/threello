@@ -10,9 +10,7 @@ import com.sparta.threello.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -25,14 +23,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter() {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
         setFilterProcessesUrl("/users/login");
     }
 
@@ -51,11 +50,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 사용자 상태를 확인
             if (user.getUserStatus() == UserStatus.DEACTIVATE) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("인증이 필요합니다.");
-                return null;
-            } else if (user.getStatus() == UserStatus.DELETED) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write("탈퇴한 사용자입니다.");
+                response.getWriter().write("탈퇴된 사용자입니다.");
                 return null;
             }
 
