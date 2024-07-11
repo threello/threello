@@ -73,19 +73,14 @@ public class BoardService {
      * @return List<BoardResponseDto>
      **/
     public List<BoardResponseDto> getMemberBoards(User loginUser) {
-        //[QueryDSL] - BoardMember에 userID로 조회하고, 조회된 보드중 permission이 Owner인것들을 조회
-        List<BoardMember> memberBoardMembers = boardMemberRepository.findMemberBoardsByUserId(loginUser.getId());
+        //[예외 1 QueryDSL] - BoardMember에 userID로 조회하고, 조회된 보드중 permission이 Owner인것들을 조회 없으면 예외처리
+        List<BoardMember> boardMembers = boardMemberRepository.findMemberBoardsByUserId(loginUser.getId());
 
-        //[예외 1] - 조회된 리스트가 없으면
-        if (memberBoardMembers.isEmpty()) {
-            throw new CustomException(ErrorType.NOT_FOUND_BOARD);
-        }
-
-        List<BoardResponseDto> memerBoards = memberBoardMembers.stream()
+        List<BoardResponseDto> boardMemberList = boardMembers.stream()
                 .map(boardMember -> new BoardResponseDto(boardMember.getBoard()))
                 .toList();
 
-        return memerBoards;
+        return boardMemberList;
     }
 
 
@@ -106,6 +101,22 @@ public class BoardService {
         board.update(requestDto);
 
         return new BoardResponseDto(board);
+    }
+
+    /**
+     * [deleteBoard] 보드 삭제하기
+     * @param boardId 보드 아이디
+     * @param loginUser 로그인한 회원 정보
+     **/
+    @Transactional
+    public void deleteBoard(Long boardId, User loginUser) {
+        // [예외 1] - 존재하는 board인지 확인
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_BOARD));
+
+        // [예외 2 QueryDSL] - 찾은 board과 user를 통해 boardMember를 조회하는데 Owner 권한을 가지고 있는지 확인
+        boardMemberRepository.findBoardAndUserAndPermission(board.getId(), loginUser.getId());
+
+        boardRepository.delete(board);
     }
 
 

@@ -36,10 +36,11 @@ public class BoardMemberRepositoryImpl implements BoardMemberRepositoryCustom {
     public List<BoardMember> findMemberBoardsByUserId(Long userId) {
         QBoardMember boardMember = QBoardMember.boardMember;
 
-        return queryFactory.selectFrom(boardMember)
+        List<BoardMember> boardMembers = queryFactory.selectFrom(boardMember)
                 .where(boardMember.user.id.eq(userId)
                         .and(boardMember.permission.eq(BoardMemberPermission.MEMBER)))
                 .fetch();
+        return Optional.ofNullable(boardMembers).orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_BOARD));
     }
 
     @Override
