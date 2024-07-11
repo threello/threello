@@ -1,12 +1,18 @@
 package com.sparta.threello.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.threello.dto.LoginRequestDto;
+import com.sparta.threello.entity.User;
+import com.sparta.threello.enums.ResponseStatus;
+import com.sparta.threello.enums.UserStatus;
 import com.sparta.threello.jwt.JwtUtil;
+import com.sparta.threello.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -39,15 +45,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
 
             // User 엔티티를 데이터베이스에서 가져옴
-            User user = userRepository.findByUserId(requestDto.getUserId())
+            User user = userRepository.findByEmail(requestDto.getEmail())
                     .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
             // 사용자 상태를 확인
-            if (user.getStatus() == UserStatusEnum.UNVERIFIED) {
+            if (user.getUserStatus() == UserStatus.DEACTIVATE) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("인증이 필요합니다.");
                 return null;
-            } else if (user.getStatus() == UserStatusEnum.DELETED) {
+            } else if (user.getStatus() == UserStatus.DELETED) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.getWriter().write("탈퇴한 사용자입니다.");
                 return null;
@@ -56,7 +62,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 사용자 상태가 VERIFIED인 경우 인증 진행
             return getAuthenticationManager().authenticate( //사용자인증
                     new UsernamePasswordAuthenticationToken( //사용자인증정보저장
-                            requestDto.getUserId(),
+                            requestDto.getEmail(),
                             requestDto.getPassword(),
                             null
                     )
@@ -85,7 +91,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
 
-        response.setStatus(HttpServletResponse.SC_OK);
+        response.setStatus(ResponseStatus.LOGIN_SUCCESS.ordinal());
+
     }
 
     //사용자 인증에 실패했을때

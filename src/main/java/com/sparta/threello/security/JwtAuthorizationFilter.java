@@ -1,6 +1,8 @@
 package com.sparta.threello.security;
 
+import com.sparta.threello.entity.User;
 import com.sparta.threello.jwt.JwtUtil;
+import com.sparta.threello.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -12,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,11 +24,10 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsService userDetailsService;
     private final UserRepository userRepository;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService,
-                                  UserRepository userRepository) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsImpl userDetailsService, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
@@ -94,12 +96,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
         // 액세스 토큰에서 클레임(사용자 정보)을 추출
         Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
-        String userId = accessTokenClaims.getSubject();
+        String email = accessTokenClaims.getSubject();
 
         // 데이터베이스에서 사용자 정보 조회
-        User user = userRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findByUserId(email).orElse(null);
         assert user != null;
-        log.info("user ID: {}", user.getUserId());
+        log.info("user ID: {}", user.getEmail());
         log.info("user token: {}", user.getRefreshToken().substring(BEARER_PREFIX.length()));
         log.info("refreshToken: {}", refreshToken);
 
@@ -107,7 +109,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (refreshToken.equals(
                 user.getRefreshToken().substring(BEARER_PREFIX.length()))) {
             // 사용자 인증 설정
-            setAuthentication(userId);
+            setAuthentication(email);
             // 요청 필터링 수행
             filterChain.doFilter(req, res);
         } else {
@@ -120,13 +122,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private void handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res,
                                           FilterChain filterChain, String refreshToken) throws IOException, ServletException {
         Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
-        String userId = refreshTokenClaims.getSubject();
+        String email = refreshTokenClaims.getSubject();
 
-        User user = userRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findByUserId(email).orElse(null);
         if (user != null && refreshToken.equals(user.getRefreshToken())) {
-            String newAccessToken = jwtUtil.createAccessToken(userId);
+            String newAccessToken = jwtUtil.createAccessToken(email);
             res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
-            setAuthentication(userId);
+            setAuthentication(email);
             filterChain.doFilter(req, res);
         } else {
             handleInvalidTokens(res);
@@ -137,14 +139,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private void handleExpiredRefreshToken(HttpServletRequest req, HttpServletResponse res,
                                            FilterChain filterChain, String accessToken) throws IOException, ServletException {
         Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
-        String userId = accessTokenClaims.getSubject();
+        String email = accessTokenClaims.getSubject();
 
-        User user = userRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findByUserId(email).orElse(null);
         if (user != null) {
-            String newRefreshToken = jwtUtil.createRefreshToken(userId);
+            String newRefreshToken = jwtUtil.createRefreshToken(email);
             res.addHeader("Refresh-Token", newRefreshToken);
-            saveRefreshTokenToDatabase(userId, newRefreshToken);
-            setAuthentication(userId);
+            saveRefreshTokenToDatabase(email, newRefreshToken);
+            setAuthentication(email);
             filterChain.doFilter(req, res);
         } else {
             handleInvalidTokens(res);
@@ -158,29 +160,29 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 
     // Refresh Token을 DB에 저장하는 메서드
-    private void saveRefreshTokenToDatabase(String userId, String newRefreshToken) {
-        User user = userRepository.findByUserId(userId).orElse(null);
+    private void saveRefreshTokenToDatabase(String email, String newRefreshToken) {
+        User user = userRepository.findByUserId(email).orElse(null);
         if (user != null) {
             user.setRefreshToken(newRefreshToken);
             userRepository.save(user);
         } else {
-            log.error("User not found: {}", userId);
+            log.error("User not found: {}", email);
         }
     }
 
 
     // 인증 처리-사용자 아이디를 기반으로 Spring Security의 인증 객체를 생성하고, 인증 컨텍스트에 설정
-    public void setAuthentication(String userId) {
+    public void setAuthentication(String email) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(userId);
+        Authentication authentication = createAuthentication(email);
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
     }
 
     // 인증 객체 생성
-    private Authentication createAuthentication(String userId) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+    private Authentication createAuthentication(String email) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, null,
                 userDetails.getAuthorities());
     }
