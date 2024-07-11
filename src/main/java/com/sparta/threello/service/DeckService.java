@@ -3,6 +3,7 @@ package com.sparta.threello.service;
 import com.sparta.threello.dto.DeckRequestDto;
 import com.sparta.threello.dto.DeckResponseDto;
 import com.sparta.threello.dto.ResponseDataDto;
+import com.sparta.threello.dto.ResponseMessageDto;
 import com.sparta.threello.entity.Deck;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.ResponseStatus;
@@ -82,10 +83,25 @@ public class DeckService {
         if (optionalDeck.isPresent()) {
             Deck deck = optionalDeck.get();
             deck.updateTitle(title);
-            deckRepository.save(deck);  // 변경사항을 저장
+            deckRepository.save(deck);
             return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
         } else {
-            throw new IllegalArgumentException("Deck not found");
+            throw new CustomException(ErrorType.NOT_FOUND_DECK);
+        }
+    }
+
+    /** [deleteDeck()] 덱 삭제
+     **/
+    public ResponseMessageDto deleteDeck(Long boardId, Long deckId) {
+
+        Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
+
+        if (optionalDeck.isPresent()) {
+            Deck deck = optionalDeck.get();
+            deckRepository.delete(deck);
+            return new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS);
+        } else {
+            throw new CustomException(ErrorType.NOT_FOUND_DECK);
         }
     }
 }

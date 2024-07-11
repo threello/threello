@@ -3,6 +3,7 @@ package com.sparta.threello.controller;
 import com.sparta.threello.dto.DeckRequestDto;
 import com.sparta.threello.dto.DeckResponseDto;
 import com.sparta.threello.dto.ResponseDataDto;
+import com.sparta.threello.dto.ResponseMessageDto;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.service.DeckService;
 import lombok.RequiredArgsConstructor;
@@ -66,5 +67,19 @@ public class DeckController {
         ResponseDataDto<DeckResponseDto> responseDto = deckService.updateDeck(boardId, deckId, title);
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, responseDto).getData());
     }
+
+    /**
+     * 덱 삭제
+     *
+     * @param boardId 보드아이디
+     * @param deckId  덱아이디
+     * @return status.code, message
+     **/
+    @DeleteMapping("/{deckId}")
+    public ResponseEntity<ResponseMessageDto> deleteDeck(@PathVariable Long boardId, @PathVariable Long deckId) {
+        ResponseMessageDto responseDto = deckService.deleteDeck(boardId, deckId);
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS));
+    }
+
 
 }
