@@ -5,6 +5,7 @@ import com.sparta.threello.enums.UserType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class User extends Timestamped{
     @Column(nullable = false)
     private String password;
 
+    @Setter
     @Column
     private String refreshToken;
 
