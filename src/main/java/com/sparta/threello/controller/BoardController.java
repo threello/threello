@@ -9,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/boards")
@@ -30,5 +27,16 @@ public class BoardController {
 //    public ResponseEntity<ResponseDataDto<BoardResponseDto>> createBoard(@Valid @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 //        BoardResponseDto responseDto = boardService.createBoard(requestDto, userDetails.getUser());
 //        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_CREATE_SUCCESS, responseDto));
+//    }
+
+    /**
+     * [getBoard] 보드 생성
+     * @param userDetails 회원 정보
+     * @return status.code, message, responseDto
+     **/
+//    @GetMapping
+//    public ResponseEntity<ResponseDataDto<BoardResponseDto>> getBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        BoardResponseDto responseDto = boardService.getBoards(userDetails.getUser());
+//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDto));
 //    }
 }
