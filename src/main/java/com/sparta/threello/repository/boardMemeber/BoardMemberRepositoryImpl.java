@@ -27,4 +27,14 @@ public class BoardMemberRepositoryImpl implements BoardMemberRepositoryCustom {
                         .and(boardMember.permission.eq(BoardMemberPermission.OWNER)))
                 .fetch();
     }
+
+    @Override
+    public List<BoardMember> findMemberBoardsByUserId(Long userId) {
+        QBoardMember boardMember = QBoardMember.boardMember;
+
+        return queryFactory.selectFrom(boardMember)
+                .where(boardMember.user.id.eq(userId)
+                        .and(boardMember.permission.eq(BoardMemberPermission.MEMBER)))
+                .fetch();
+    }
 }

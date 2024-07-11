@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface BoardMemberRepositoryCustom {
     List<BoardMember> findOwnerBoardsByUserId(Long userId);
+    List<BoardMember> findMemberBoardsByUserId(Long userId);
 }

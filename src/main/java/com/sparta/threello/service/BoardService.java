@@ -45,7 +45,7 @@ public class BoardService {
 
 
     /**
-     * [getOwnerBoards] 보드 생성
+     * [getOwnerBoards] owner 타입 보드 불러오기
      * @param loginUser 로그인한 회원 정보
      * @return List<BoardResponseDto>
      **/
@@ -59,6 +59,28 @@ public class BoardService {
         }
 
         List<BoardResponseDto> ownerBoards = ownerBoardMembers.stream()
+                .map(boardMember -> new BoardResponseDto(boardMember.getBoard()))
+                .toList();
+
+        return ownerBoards;
+    }
+
+
+    /**
+     * [getMemberBoards] member 타입(초대된) 보드 불러오기
+     * @param loginUser 로그인한 회원 정보
+     * @return List<BoardResponseDto>
+     **/
+    public List<BoardResponseDto> getMemberBoards(User loginUser) {
+        //[QueryDSL] - BoardMember에 userID로 조회하고, 조회된 보드중 permission이 Owner인것들을 조회
+        List<BoardMember> memberBoardMembers = boardMemberRepository.findMemberBoardsByUserId(loginUser.getId());
+
+        //[예외 1] - 조회된 리스트가 없으면
+        if (memberBoardMembers.isEmpty()) {
+            throw new CustomException(ErrorType.NOT_FOUND_BOARD);
+        }
+
+        List<BoardResponseDto> ownerBoards = memberBoardMembers.stream()
                 .map(boardMember -> new BoardResponseDto(boardMember.getBoard()))
                 .toList();
 

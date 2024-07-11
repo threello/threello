@@ -30,14 +30,24 @@ public class BoardController {
 //    }
 
     /**
-     * [getBoard] 보드 생성
-     *
+     * [getOwnerBoards] owner 타입 보드 불러오기
      * @param userDetails 회원 정보
      * @return status.code, message, responseDto
      **/
-//    @GetMapping
-//    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//    @GetMapping("/owner")
+//    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getOwnerBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
 //        List<BoardResponseDto> responseDtoList = boardService.getOwnerBoards(userDetails.getUser());
+//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
+//    }
+
+    /**
+     * [getOwnerBoards] member 타입(초대된) 보드 불러오기
+     * @param userDetails 회원 정보
+     * @return status.code, message, responseDto
+     **/
+//    @GetMapping("/member")
+//    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getMemberBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+//        List<BoardResponseDto> responseDtoList = boardService.getMemberBoards(userDetails.getUser());
 //        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
 //    }
 }
