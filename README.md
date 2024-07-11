@@ -36,13 +36,8 @@
 
 ### Project Task Plan
 
-추후에 추가하겠습니다.
+<img width="595" alt="image" src="https://github.com/threello/threello/assets/19384105/433bda88-0e66-4ed5-ad87-4591ec67411d">
 
-
-
-<br>
-<br>
-<br>
 
 ### Git Commit Convention
 
