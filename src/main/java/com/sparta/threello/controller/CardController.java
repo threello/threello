@@ -31,7 +31,7 @@ public class CardController {
 
     //카드 생성
     @PostMapping("/decks/{deckId}/cards")
-    public ResponseEntity<ResponseMessageDto> createCard(
+    public ResponseEntity<ResponseDataDto> createCard(
             @PathVariable Long deckId, @Valid @RequestBody CreateCardRequestDto requestDto,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED)
