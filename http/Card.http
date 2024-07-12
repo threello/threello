@@ -33,8 +33,13 @@ refreshToken: {{refreshToken}}
 
 {
   "title" : "process",
-  "cardDeckPosition" : "todo",
-  "position" : "1"
+  "cardStatus": "PROCESSING",
+  "position" : 1,
+  "description": "12345",
+  "emailOfCardManager": "manager2@naver.com",
+  "dueAt": "2024-12-31"
+
+
 }
 
 

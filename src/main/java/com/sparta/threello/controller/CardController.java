@@ -1,16 +1,13 @@
 package com.sparta.threello.controller;
 
 
-import com.sparta.threello.dto.CreateCardRequestDto;
-import com.sparta.threello.dto.GetStatusCardRequestDto;
-import com.sparta.threello.dto.ResponseDataDto;
-import com.sparta.threello.dto.ResponseMessageDto;
-import com.sparta.threello.dto.UpdateCardPositionRequestDto;
-import com.sparta.threello.dto.UpdateCardRequestDto;
+import com.sparta.threello.dto.*;
+import com.sparta.threello.entity.Card;
 import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,7 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class CardController {
@@ -35,8 +32,9 @@ public class CardController {
     public ResponseEntity<ResponseDataDto> createCard(
             @PathVariable Long deckId, @Valid @RequestBody CreateCardRequestDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ResponseDataDto responseDto =cardService.createCard(deckId, requestDto, userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(cardService.createCard(deckId, requestDto, userDetails.getUser()));
+                .body(responseDto);
     }
 
     //카드 전체 조회

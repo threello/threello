@@ -29,5 +29,6 @@ public class CardResponseDto {
         this.position = card.getPosition();
         this.createdAt = card.getCreatedAt();
         this.modifiedAt = card.getModifiedAt();
+
     }
 }

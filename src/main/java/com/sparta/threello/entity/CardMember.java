@@ -21,8 +21,12 @@ public class CardMember extends Timestamped {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
-    public CardMember(User user, Card card) {
-        this.user = user;
+
+    public CardMember(Card card, User user) {
         this.card = card;
+        this.user = user;
     }
 }
+
+
+

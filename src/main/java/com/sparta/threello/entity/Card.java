@@ -1,5 +1,6 @@
 package com.sparta.threello.entity;
 
+import com.sparta.threello.dto.CreateCardRequestDto;
 import com.sparta.threello.dto.UpdateCardPositionRequestDto;
 import com.sparta.threello.dto.UpdateCardRequestDto;
 import com.sparta.threello.enums.CardStatus;
@@ -24,6 +25,8 @@ public class Card extends Timestamped{
     @Column(nullable = false)
     private Long position;
 
+    //카드상태의 default값을 정해줌
+    @Enumerated(EnumType.STRING)
     @Column(name= "card_status",nullable = false)
     private CardStatus cardStatus;
 
@@ -44,14 +47,21 @@ public class Card extends Timestamped{
     @OneToOne(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private CardDetail cardDetail;
 
-
-    public Card(String title, Long position, CardStatus cardStatus, String cardDeckPosition, Deck deck) {
-        this.title = title;
-        this.position = position;
-        this.cardStatus = cardStatus;
-        this.cardDeckPosition = cardDeckPosition;
-        this.deck = deck;
+    public Card(CreateCardRequestDto requestDto, Deck deck) {
+        this.title = requestDto.getTitle();
+        this.deck=deck;
+        this.cardStatus=requestDto.getCardStatus();
+        this.position = requestDto.getPosition();
+        this.cardDeckPosition = deck.getTitle();
     }
+
+//    public Card(String title, Long position, CardStatus cardStatus, Deck deck) {
+//        this.title = title;
+//        this.position = position;
+//        this.cardStatus = cardStatus;
+//        this.cardDeckPosition = deck.getTitle();
+//        this.deck = deck;
+//    }
 
     public void update(UpdateCardRequestDto requestDto) {
         this.title = requestDto.getTitle();
@@ -61,5 +71,13 @@ public class Card extends Timestamped{
     public void updatePosition(UpdateCardPositionRequestDto requestDto) {
         this.cardDeckPosition = requestDto.getCardDeckPosition();
         this.position = requestDto.getPosition();
+    }
+
+
+    /*
+    * 연관관계 편의 메서드
+    * */
+    public void setCardDetail(CardDetail cardDetail) {
+        this.cardDetail=cardDetail;
     }
 }
