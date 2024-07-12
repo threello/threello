@@ -59,7 +59,7 @@ public class CardController {
     }
 
     //상태별 카드 조회
-    @GetMapping("/decks/{deckId}/cards")
+    @GetMapping("/decks/{deckId}/cards/status")
     public ResponseEntity<ResponseDataDto> getUserCards(@PathVariable Long deckId,
             @RequestBody GetStatusCardRequestDto requestDto) {
         return ResponseEntity.ok(cardService.getStatusCards(deckId, requestDto));

@@ -43,10 +43,6 @@ public class CardService {
                 requestDto.getCardDeckPosition(), deck);
         //카드 저장
         cardRepository.save(card);
-        //카드 멤버 생성
-        CardMember cardMember = new CardMember(user, card);
-        //카드 멤버 저장
-        cardMemberRepository.save(cardMember);
         //카드 응답 DTO 생성
         CardResponseDto responseDto = new CardResponseDto(card);
         return new ResponseDataDto(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
@@ -77,7 +73,7 @@ public class CardService {
     //상태별 카드 조회
     public ResponseDataDto getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
         Sort sort = Sort.by("createdAt").ascending(); // 생성 일자로 오름차순 정렬
-        List<Card> cardList = cardRepository.findAllByCardStatus(requestDto.getCardStatus(), sort);
+        List<Card> cardList = cardRepository.findAllByCardStatusAndDeckId(deckId,requestDto.getCardStatus(), sort);
         List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
         return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardResponseDataList);
     }

@@ -2,6 +2,7 @@ package com.sparta.threello.controller;
 
 import com.sparta.threello.dto.*;
 import com.sparta.threello.enums.ResponseStatus;
+import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.BoardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,11 @@ public class BoardController {
      * @param userDetails 회원 정보
      * @return status.code, message, responseDto
      **/
-//    @PostMapping
-//    public ResponseEntity<ResponseDataDto<BoardResponseDto>> createBoard(@Valid @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        BoardResponseDto responseDto = boardService.createBoard(requestDto, userDetails.getUser());
-//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_CREATE_SUCCESS, responseDto));
-//    }
+    @PostMapping
+    public ResponseEntity<ResponseDataDto<BoardResponseDto>> createBoard(@Valid @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        BoardResponseDto responseDto = boardService.createBoard(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_CREATE_SUCCESS, responseDto));
+    }
 
     /**
      * [getOwnerBoards] owner 타입 보드 불러오기

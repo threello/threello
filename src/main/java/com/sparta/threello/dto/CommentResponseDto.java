@@ -3,8 +3,9 @@ package com.sparta.threello.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.threello.entity.Comment;
 import java.time.LocalDateTime;
+import lombok.Getter;
 
-
+@Getter
 public class CommentResponseDto {
     private Long id;
     private Long userId;
