@@ -1,6 +1,7 @@
 package com.sparta.threello.security;
 
 import com.sparta.threello.entity.User;
+import com.sparta.threello.enums.UserType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,7 +19,8 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String authority = "default";
+        UserType userType = user.getUserType();
+        String authority = userType.getType();
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(authority);
         Collection<GrantedAuthority> authorities = new ArrayList<>();

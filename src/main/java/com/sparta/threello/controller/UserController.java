@@ -1,54 +1,70 @@
 package com.sparta.threello.controller;
 
 
+import com.sparta.threello.dto.*;
 import com.sparta.threello.entity.User;
+import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.jwt.JwtUtil;
 import com.sparta.threello.repository.UserRepository;
+import com.sparta.threello.security.UserDetailsImpl;
+import com.sparta.threello.service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    @Autowired
-    public UserController(JwtUtil jwtUtil, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
-        this.userRepository=userRepository;
+    /**
+     * 회원가입
+     * @param signupRequest 회원가입 정보
+     * @return 회원 정보, 응답 상태
+     */
+    @PostMapping
+    public ResponseEntity<ResponseMessageDto> signupUser(@RequestBody @Valid SignupRequestDto signupRequest) {
+        System.out.println("test");
+        userService.signupUser(signupRequest);
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.SIGN_UP_SUCCESS));
     }
 
-    // 공통 응답 처리 Generic 메서드
-    private <T> ResponseEntity<T> createResponse(T body, HttpStatus status) {
-        return new ResponseEntity<>(body, status);
-    }
-
+    /**
+     * 로그아웃
+     *
+     * @param details 회원 정보
+     * @param request 요청 객체
+     * @return 응답 상태
+     */
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        // 헤더에서 토큰을 가져옴 ->
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetailsImpl details, HttpServletRequest request) {
+        String accessToken = jwtUtil.getAccessTokenFromHeader(request);
         String refreshToken = jwtUtil.getRefreshTokenFromHeader(request);
 
-        // 토큰이 유효한지 확인
-        if (StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken)) {
-            Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
-            String userId = refreshTokenClaims.getSubject();
+        userService.logout(details.getUser(), accessToken, refreshToken);
 
-            // 유저의 리프레시 토큰 삭제
-            User user = userRepository.findByEmail(userId).orElse(null);
-            if (user != null) {
-                user.setRefreshToken(null);
-                userRepository.save(user);
-            }
-        }
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.LOGOUT_SUCCESS));
+    }
 
-        // 클라이언트 측 토큰 삭제 요청을 위해 응답 설정
-        return createResponse("Logged out successfully", HttpStatus.OK);
+    /**
+     * 회원 상태 비활성화
+     * @param passwordRequest 비밀번호
+     * @param details 회원 정보
+     * @return 응답 상태
+     */
+    @PatchMapping
+    public ResponseEntity<?> deactiveUser(@RequestBody PasswordRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.deactivateUser(requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DEACTIVATE_USER_SUCCESS));
     }
 }

@@ -1,6 +1,9 @@
 package com.sparta.threello.security;
 
 import com.sparta.threello.entity.User;
+import com.sparta.threello.enums.ErrorType;
+import com.sparta.threello.enums.UserType;
+import com.sparta.threello.exception.CustomException;
 import com.sparta.threello.jwt.JwtUtil;
 import com.sparta.threello.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -26,155 +29,66 @@ import static com.sparta.threello.jwt.JwtUtil.BEARER_PREFIX;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
-    private final UserRepository userRepository;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
-        this.userRepository = userRepository;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String accessToken = jwtUtil.getAccessTokenFromHeader(request);
 
-        String uri = req.getRequestURI();
-        String method = req.getMethod();
-        log.info("Requested URI: {}", uri);
-
-        //회원가입과 로그인 엔드포인트는 필터링하지 않음
-        if (uri.equals("/users/signup") || uri.equals("/users/login")) {
-            filterChain.doFilter(req, res);
-            return;
-        }
-
-        // 이메일 인증 관련 경로는 필터링하지 않음
-        if (uri.startsWith("/email-verification")) {
-            filterChain.doFilter(req, res);
-            return;
-        }
-
-        // 특정 엔드포인트들 필터링하지 않음
-        if (method.equals("GET") && (
-                uri.equals("/users/posts") ||
-                        uri.matches("/users/[^/]+/following/posts") ||
-                        uri.matches("/users/[^/]+/posts") ||
-                        uri.matches("/users/[^/]+/posts/[^/]+"))) {
-            filterChain.doFilter(req, res);
-            return;
-        }
-
-        //HTTP 요청 헤더에서 JWT 토큰 값을 가져옴. 요청헤더에서 토큰 추출
-        String accessToken = jwtUtil.getAccessTokenFromHeader(req);
-        String refreshToken = jwtUtil.getRefreshTokenFromHeader(req);
-
-        //토큰존재여부확인
-        if (StringUtils.hasText(accessToken) && StringUtils.hasText(refreshToken)) {
-            boolean accessTokenValid = jwtUtil.validateToken(accessToken);
-            boolean refreshTokenValid = jwtUtil.validateToken(refreshToken);
-
-            if (accessTokenValid && refreshTokenValid) {
-                log.info("handleValidTokens");
-                handleValidTokens(req, res, filterChain, accessToken, refreshToken);
-            } else if (!accessTokenValid && refreshTokenValid) {
-                log.info("handleExpiredAccessToken");
-                handleExpiredAccessToken(req, res, filterChain, refreshToken);
-            } else if (accessTokenValid && !refreshTokenValid) {
-                log.info("handleExpiredRefreshToken");
-                handleExpiredRefreshToken(req, res, filterChain, accessToken);
+        if (StringUtils.hasText(accessToken)) {
+            if (jwtUtil.validateToken(accessToken)) {
+                validToken(accessToken);
             } else {
-                log.info("handleInvalidTokens");
-                handleInvalidTokens(res);
+                invalidToken(request, response);
             }
-        } else {
-            handleInvalidTokens(res);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private void validToken(String token) {
+        Claims info = jwtUtil.getUserInfoFromToken(token);
+
+        try {
+            setAuthentication(info.getSubject());
+        } catch (Exception e) {
+            log.error("username = {}, message = {}", info.getSubject(), "인증 정보를 찾을 수 없습니다.");
+            throw new CustomException(ErrorType.NOT_FOUND_AUTHENTICATION_INFO);
         }
     }
 
-    //액세스 토큰과 리프레시 토큰이 모두 유효한 경우 인증을 설정하고 요청을 필터링.
-    private void handleValidTokens(HttpServletRequest req, HttpServletResponse res,
-                                   FilterChain filterChain, String accessToken, String refreshToken)
-            throws IOException, ServletException {
-        // 액세스 토큰에서 클레임(사용자 정보)을 추출
-        Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
-        String email = accessTokenClaims.getSubject();
+    private void invalidToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtUtil.getRefreshTokenFromHeader(request);
 
-        // 데이터베이스에서 사용자 정보 조회
-        User user = userRepository.findByEmail(email).orElse(null);
-        assert user != null;
-        log.info("user ID: {}", user.getEmail());
-        log.info("user token: {}", user.getRefreshToken().substring(BEARER_PREFIX.length()));
-        log.info("refreshToken: {}", refreshToken);
+        if (StringUtils.hasText(refreshToken)) {
+            if (jwtUtil.validateToken(refreshToken) && jwtUtil.existRefreshToken(refreshToken)) {
+                Claims info = jwtUtil.getUserInfoFromToken(refreshToken);
 
-        // 사용자가 존재하고, 요청의 리프레시 토큰이 DB에 저장된 리프레시 토큰과 일치하는지 확인
-        if (refreshToken.equals(
-                user.getRefreshToken().substring(BEARER_PREFIX.length()))) {
-            // 사용자 인증 설정
-            setAuthentication(email);
-            // 요청 필터링 수행
-            filterChain.doFilter(req, res);
-        } else {
-            // 토큰이 유효하지 않은 경우 처리
-            handleInvalidTokens(res);
+                UserType type = UserType.valueOf(info.get("type").toString());
+
+                String newAccessToken = jwtUtil.createToken(info.getSubject(), type);
+
+                jwtUtil.setHeaderAccessToken(response, newAccessToken);
+
+                try {
+                    setAuthentication(info.getSubject());
+                } catch (Exception e) {
+                    log.error("username = {}, message = {}", info.getSubject(), "인증 정보를 찾을 수 없습니다.");
+                    throw new CustomException(ErrorType.NOT_FOUND_AUTHENTICATION_INFO);
+                }
+            } else {
+                throw new CustomException(ErrorType.INVALID_REFRESH_TOKEN);
+            }
         }
     }
 
-    //액세스 토큰이 만료되고 리프레시 토큰이 유효한 경우 새로운 액세스 토큰을 생성하고 응답 헤더에 추가.
-    private void handleExpiredAccessToken(HttpServletRequest req, HttpServletResponse res,
-                                          FilterChain filterChain, String refreshToken) throws IOException, ServletException {
-        Claims refreshTokenClaims = jwtUtil.getUserInfoFromToken(refreshToken);
-        String email = refreshTokenClaims.getSubject();
-
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user != null && refreshToken.equals(user.getRefreshToken())) {
-            String newAccessToken = jwtUtil.createAccessToken(email);
-            res.addHeader(JwtUtil.AUTHORIZATION_HEADER, newAccessToken);
-            setAuthentication(email);
-            filterChain.doFilter(req, res);
-        } else {
-            handleInvalidTokens(res);
-        }
-    }
-
-    //액세스 토큰이 유효하고 리프레시 토큰이 만료된 경우 새로운 리프레시 토큰을 생성하고 응답 헤더에 추가.
-    private void handleExpiredRefreshToken(HttpServletRequest req, HttpServletResponse res,
-                                           FilterChain filterChain, String accessToken) throws IOException, ServletException {
-        Claims accessTokenClaims = jwtUtil.getUserInfoFromToken(accessToken);
-        String email = accessTokenClaims.getSubject();
-
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user != null) {
-            String newRefreshToken = jwtUtil.createRefreshToken(email);
-            res.addHeader("Refresh-Token", newRefreshToken);
-            saveRefreshTokenToDatabase(email, newRefreshToken);
-            setAuthentication(email);
-            filterChain.doFilter(req, res);
-        } else {
-            handleInvalidTokens(res);
-        }
-    }
-
-    private void handleInvalidTokens(HttpServletResponse res) throws IOException {
-        log.error("Invalid Tokens");
-        res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    }
-
-
-    // Refresh Token을 DB에 저장하는 메서드
-    private void saveRefreshTokenToDatabase(String email, String newRefreshToken) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user != null) {
-            user.setRefreshToken(newRefreshToken);
-            userRepository.save(user);
-        } else {
-            log.error("User not found: {}", email);
-        }
-    }
-
-
-    // 인증 처리-사용자 아이디를 기반으로 Spring Security의 인증 객체를 생성하고, 인증 컨텍스트에 설정
-    public void setAuthentication(String email) {
+    // 인증 처리
+    private void setAuthentication(String email) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = createAuthentication(email);
         context.setAuthentication(authentication);
@@ -185,7 +99,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     // 인증 객체 생성
     private Authentication createAuthentication(String email) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        return new UsernamePasswordAuthenticationToken(userDetails, null,
-                userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }
