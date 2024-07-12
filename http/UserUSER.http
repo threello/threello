@@ -1,0 +1,57 @@
+### 회원가입 (USER 1)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "user@naver.com",
+  "password": "Usertest1!",
+  "name" : "김우진",
+  "userType" : "USER"
+}
+
+### 회원가입 (USER 2)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "user2@naver.com",
+  "password": "Usertest2!",
+  "name" : "최재원",
+  "userType" : "USER"
+}
+
+
+
+### 로그인 (USER 1)
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "user@naver.com",
+  "password": "Usertest1!"
+}
+
+> {%
+    client.log(response.headers.valueOf("accessToken"));
+    client.log(response.headers.valueOf("refreshToken"));
+    client.global.set("accessToken", response.headers.valueOf("accessToken"));
+    client.global.set("refreshToken", response.headers.valueOf("refreshToken"));
+%}
+
+
+### 로그인 (USER 2)
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "user2@naver.com",
+  "password": "Usertest2!"
+}
+
+> {%
+    client.log(response.headers.valueOf("accessToken"));
+    client.log(response.headers.valueOf("refreshToken"));
+    client.global.set("accessToken", response.headers.valueOf("accessToken"));
+    client.global.set("refreshToken", response.headers.valueOf("refreshToken"));
+%}
+
