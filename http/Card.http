@@ -33,8 +33,8 @@ refreshToken: {{refreshToken}}
 
 {
   "title" : "process",
-  "cardStatus": "PROCESSING",
-  "position" : 5,
+  "cardStatus": "COMPLETED",
+  "position" : 6,
   "description": "fd",
   "emailOfCardManager": "manager2@naver.com",
   "dueAt": "2024-12-01"
@@ -59,8 +59,19 @@ refreshToken: {{refreshToken}}
 
 
 ###작업자별 카드 조회
-@userId=2
+@userId=1
 GET http://localhost:8080/decks/{{deckId}}/cards/{{userId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
+
+###상태별 카드 조회
+GET http://localhost:8080/decks/{{deckId}}/cards/status
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+   "cardStatus":"COMPLETED"
+}
+
