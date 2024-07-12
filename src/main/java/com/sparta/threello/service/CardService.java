@@ -50,18 +50,22 @@ public class CardService {
         cardRepository.save(card);
         cardRepository.flush();
 
+        //카드 응답 DTO 생성
+        CardResponseDto responseDto = new CardResponseDto(card);
+
+        // 작업관리자 설정
         if (requestDto.getEmailOfCardManager()!=null) {
             User cardManager = userRepository.findByEmail(requestDto.getEmailOfCardManager())
                     .orElseThrow(()->new CustomException(ErrorType.NOT_FOUND_USER));
             CardMember cardMember = new CardMember(card,user);
             cardMemberRepository.save(cardMember);
+            responseDto.setCardManager(cardMember.getUser().getName());
         }
 
         //카드 디테일 저장
         CardDetail cardDetail = new CardDetail(requestDto, card);
         cardDetailRepository.save(cardDetail);
-        //카드 응답 DTO 생성
-        CardResponseDto responseDto = new CardResponseDto(card);
+
         return new ResponseDataDto(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
 
 
