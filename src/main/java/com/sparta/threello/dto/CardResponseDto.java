@@ -4,10 +4,14 @@ package com.sparta.threello.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.threello.entity.Card;
 import com.sparta.threello.entity.CardDetail;
+import com.sparta.threello.entity.CardMember;
 import com.sparta.threello.enums.CardStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 
 @Getter
@@ -22,7 +26,7 @@ public class CardResponseDto {
 
     private String title;
 
-    private String CardManager;
+    private List<String> cardManager;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueAt;
@@ -45,10 +49,10 @@ public class CardResponseDto {
         this.position = card.getPosition();
         this.createdAt = card.getCreatedAt();
         this.modifiedAt = card.getModifiedAt();
-
+        this.cardManager = card.getCardMembers().stream().map(cardMember -> cardMember.getUser().getName()).toList();
     }
 
-    public void setCardManager(String name) {
-        this.CardManager = name;
-    }
+
+
+
 }

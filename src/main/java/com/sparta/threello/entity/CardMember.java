@@ -22,9 +22,11 @@ public class CardMember extends Timestamped {
     private Card card;
 
 
+    /*연관관계 편의 메서드*/
     public CardMember(Card card, User user) {
         this.card = card;
         this.user = user;
+        card.getCardMembers().add(this);
     }
 }
 

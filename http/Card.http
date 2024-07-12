@@ -19,13 +19,13 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title": "todo",
-  "position": 1
+  "title": "todo2",
+  "position": 2
 }
 
 
 ###카드 생성
-@deckId=1
+@deckId=2
 POST http://localhost:8080/decks/{{deckId}}/cards
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -34,8 +34,8 @@ refreshToken: {{refreshToken}}
 {
   "title" : "process",
   "cardStatus": "PROCESSING",
-  "position" : 1,
-  "description": "12345",
+  "position" : 5,
+  "description": "fd",
   "emailOfCardManager": "manager2@naver.com",
   "dueAt": "2024-12-01"
 
@@ -43,7 +43,7 @@ refreshToken: {{refreshToken}}
 }
 
 
-###카드 전체 조회
+###카드 전체 조회(덱별 카드조회)
 GET http://localhost:8080/decks/{{deckId}}/cards
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -51,7 +51,7 @@ refreshToken: {{refreshToken}}
 
 
 ###특정 카드 조회
-@cardId=1
+@cardId=20
 GET http://localhost:8080/cards/{{cardId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -59,7 +59,7 @@ refreshToken: {{refreshToken}}
 
 
 ###작업자별 카드 조회
-@userId=1
+@userId=2
 GET http://localhost:8080/decks/{{deckId}}/cards/{{userId}}
 Content-Type: application/json
 accessToken: {{accessToken}}

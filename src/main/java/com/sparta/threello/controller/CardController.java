@@ -3,6 +3,7 @@ package com.sparta.threello.controller;
 
 import com.sparta.threello.dto.*;
 import com.sparta.threello.entity.Card;
+import com.sparta.threello.repository.cardRepository.CardRepository;
 import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.CardService;
 import jakarta.validation.Valid;
@@ -26,18 +27,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class CardController {
 
     private final CardService cardService;
+    private final CardRepository cardRepository;
 
     //카드 생성
     @PostMapping("/decks/{deckId}/cards")
     public ResponseEntity<ResponseDataDto> createCard(
-            @PathVariable Long deckId, @Valid @RequestBody CreateCardRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ResponseDataDto responseDto =cardService.createCard(deckId, requestDto, userDetails.getUser());
+            @PathVariable Long deckId, @Valid @RequestBody CreateCardRequestDto requestDto) {
+        ResponseDataDto responseDto =cardService.createCard(deckId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseDto);
     }
 
-    //카드 전체 조회
+    //카드 전체 조회(deck별)
     @GetMapping("/decks/{deckId}/cards")
     public ResponseEntity<ResponseDataDto> getCards(@PathVariable Long deckId) {
         return ResponseEntity.ok(cardService.getCards(deckId));

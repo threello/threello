@@ -49,6 +49,5 @@ refreshToken: {{refreshToken}}
     client.global.clear("refreshToken");
 %}
 
-### 카드생성
-P
+
 
