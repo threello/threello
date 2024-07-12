@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -33,16 +34,11 @@ public class JwtUtil {
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
 
-    private final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L;
-
-    private final long REFRESH_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L;
-
-    private Set<String> blacklist = ConcurrentHashMap.newKeySet();
+    private final Set<String> blacklist = ConcurrentHashMap.newKeySet();
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
     private Key key;
-    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     private final UserRepository userRepository;
 
@@ -56,12 +52,14 @@ public class JwtUtil {
     public String createToken(String accountId, UserType type) {
         Date date = new Date();
 
+        // 30분
+        long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L;
         return BEARER_PREFIX + Jwts.builder()
-                .setSubject(accountId)
+                .subject(accountId)
                 .claim(AUTHORIZATION_KEY, type)
-                .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRE_TIME))
-                .setIssuedAt(date)
-                .signWith(key, signatureAlgorithm)
+                .expiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRE_TIME))
+                .issuedAt(date)
+                .signWith(key)
                 .compact();
     }
 
@@ -69,12 +67,11 @@ public class JwtUtil {
     public String createRefreshToken(String accountId, UserType type) {
         Date date = new Date();
 
-        return BEARER_PREFIX + Jwts.builder()
-                .setSubject(accountId)
-                .claim(AUTHORIZATION_KEY, type)
-                .setExpiration(new Date(date.getTime() + REFRESH_TOKEN_EXPIRE_TIME))
-                .setIssuedAt(date)
-                .signWith(key, signatureAlgorithm)
+        // 14일
+        long REFRESH_TOKEN_EXPIRE_TIME = 14 * 24 * 60 * 60 * 1000L;
+        return BEARER_PREFIX + Jwts.builder().subject(accountId)
+                .claim(AUTHORIZATION_KEY, type).expiration(new Date(date.getTime() + REFRESH_TOKEN_EXPIRE_TIME)).issuedAt(date)
+                .signWith(key)
                 .compact();
     }
 
@@ -102,9 +99,12 @@ public class JwtUtil {
             throw new CustomException(ErrorType.LOGGED_OUT_TOKEN);
         }
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parser()
+                    .verifyWith((SecretKey) key)
+                    .build()
+                    .parseSignedClaims(token);
             return true;
-        } catch (SecurityException | MalformedJwtException | SignatureException e) {
+        } catch (SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
             throw new CustomException(ErrorType.INVALID_JWT);
         } catch (ExpiredJwtException e) {
@@ -121,7 +121,10 @@ public class JwtUtil {
 
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return Jwts.parser()
+                .verifyWith((SecretKey) key)
+                .build().parseSignedClaims(token)
+                .getPayload();
     }
 
     // refresh 토큰이 사용자 정보에 존재하는지 확인
