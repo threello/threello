@@ -39,7 +39,7 @@ public class CardService {
     //카드 생성
     @Transactional
     public ResponseDataDto createCard(Long deckId,
-                                      CreateCardRequestDto requestDto, User user) {
+                                      CreateCardRequestDto requestDto) {
         //덱 조회
         Deck deck = deckRepository.findById(deckId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_DECK));
@@ -50,17 +50,17 @@ public class CardService {
         cardRepository.save(card);
         cardRepository.flush();
 
-        //카드 응답 DTO 생성
-        CardResponseDto responseDto = new CardResponseDto(card);
 
         // 작업관리자 설정
         if (requestDto.getEmailOfCardManager()!=null) {
             User cardManager = userRepository.findByEmail(requestDto.getEmailOfCardManager())
                     .orElseThrow(()->new CustomException(ErrorType.NOT_FOUND_USER));
-            CardMember cardMember = new CardMember(card,user);
+            CardMember cardMember = new CardMember(card,cardManager);
             cardMemberRepository.save(cardMember);
-            responseDto.setCardManager(cardMember.getUser().getName());
         }
+
+        //카드 응답 DTO 생성
+        CardResponseDto responseDto = new CardResponseDto(card);
 
         //카드 디테일 저장
         CardDetail cardDetail = new CardDetail(requestDto, card);
@@ -71,10 +71,10 @@ public class CardService {
 
     }
 
-    //카드 전체 조회
+    //카드 전체 조회(deck별)
     public ResponseDataDto getCards(Long deckId) {
-        Sort sort = Sort.by("createdAt").ascending(); // 생성 일자로 오름차순 정렬
-        List<Card> cardList = cardRepository.findAllByDeckId(deckId, sort);
+
+        List<Card> cardList = cardRepository.findAllByDeckIdOrderByPositionAsc(deckId);// position별로 오름차순 정렬
         List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
         return new ResponseDataDto(ResponseStatus.CARDS_READ_SUCCESS, cardResponseDataList);
     }
@@ -86,7 +86,7 @@ public class CardService {
         return new ResponseDataDto(ResponseStatus.CARD_READ_SUCCESS, cardResponseDto);
     }
 
-    //작업자별 카드 조회
+    //작업자별 카드 조회(덱별로)
     public ResponseDataDto getUserCards(Long deckId, Long userId) {
         List<Card> cardList = cardRepository.findAllByDeckIdAndUserId(deckId, userId);
         List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();

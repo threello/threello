@@ -10,12 +10,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "card")
-public class Card extends Timestamped{
+public class Card extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,11 +30,11 @@ public class Card extends Timestamped{
 
     //카드상태의 default값을 정해줌
     @Enumerated(EnumType.STRING)
-    @Column(name= "card_status",nullable = false)
+    @Column(name = "card_status", nullable = false)
     private CardStatus cardStatus;
 
     //deck 의 title 값이 들어가야함
-    @Column(name= "card_deck_position",nullable = false)
+    @Column(name = "card_deck_position", nullable = false)
     private String cardDeckPosition;
 
     //마감일자
@@ -48,10 +50,14 @@ public class Card extends Timestamped{
     @OneToOne(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private CardDetail cardDetail;
 
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CardMember> cardMembers = new ArrayList<>();
+
     public Card(CreateCardRequestDto requestDto, Deck deck) {
+
         this.title = requestDto.getTitle();
-        this.deck=deck;
-        this.cardStatus=requestDto.getCardStatus();
+        this.deck = deck;
+        this.cardStatus = requestDto.getCardStatus();
         this.position = requestDto.getPosition();
         this.cardDeckPosition = deck.getTitle();
         this.dueAt = requestDto.getDueAt();
@@ -77,9 +83,9 @@ public class Card extends Timestamped{
 
 
     /*
-    * 연관관계 편의 메서드
-    * */
+     * 연관관계 편의 메서드
+     * */
     public void setCardDetail(CardDetail cardDetail) {
-        this.cardDetail=cardDetail;
+        this.cardDetail = cardDetail;
     }
 }
