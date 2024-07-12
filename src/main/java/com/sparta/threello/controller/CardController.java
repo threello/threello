@@ -7,6 +7,7 @@ import com.sparta.threello.dto.ResponseDataDto;
 import com.sparta.threello.dto.ResponseMessageDto;
 import com.sparta.threello.dto.UpdateCardPositionRequestDto;
 import com.sparta.threello.dto.UpdateCardRequestDto;
+import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.CardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class CardController {
     @PostMapping("/decks/{deckId}/cards")
     public ResponseEntity<ResponseDataDto> createCard(
             @PathVariable Long deckId, @Valid @RequestBody CreateCardRequestDto requestDto,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(cardService.createCard(deckId, requestDto, userDetails.getUser()));
     }

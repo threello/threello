@@ -2,15 +2,15 @@ package com.sparta.threello.controller;
 
 
 import com.sparta.threello.dto.CommentRequestDto;
-import com.sparta.threello.dto.CreateCommentRequestDto;
+
 import com.sparta.threello.dto.ResponseDataDto;
 import com.sparta.threello.dto.ResponseMessageDto;
+import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +30,7 @@ public class CommentController {
     @PostMapping("/cards/{cardId}/comments")
     public ResponseEntity<ResponseDataDto> createComment(@PathVariable Long cardId,
             @RequestBody CommentRequestDto requestDto,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(commentService.createComment(cardId, userDetails.getUser(),requestDto));
     }
