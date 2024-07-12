@@ -8,7 +8,6 @@ import com.sparta.threello.dto.ResponseMessageDto;
 import com.sparta.threello.dto.UpdateCardPositionRequestDto;
 import com.sparta.threello.dto.UpdateCardRequestDto;
 import com.sparta.threello.entity.*;
-import com.sparta.threello.enums.CardStatus;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.exception.CustomException;
@@ -20,11 +19,9 @@ import com.sparta.threello.repository.cardRepository.CardRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.sparta.threello.entity.QCard.card;
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -93,10 +90,9 @@ public class CardService {
         return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS, cardResponseDataList);
     }
 
-    //상태별 카드 조회
+    //상태별 카드 조회 JpaRepository 이용하여 포지션순으로 카드 정렬
     public ResponseDataDto getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
-        Sort sort = Sort.by("createdAt").ascending(); // 생성 일자로 오름차순 정렬
-        List<Card> cardList = cardRepository.findAllByCardStatusAndDeckId(deckId, requestDto.getCardStatus(), sort);
+        List<Card> cardList = cardRepository.findAllByCardStatusAndDeckIdOrderByPositionAsc(requestDto.getCardStatus(),deckId);
         List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
         return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardResponseDataList);
     }

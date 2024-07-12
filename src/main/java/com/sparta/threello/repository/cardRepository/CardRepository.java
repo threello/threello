@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long>, CardRepositoryCustom {
-    List<Card> findAllByDeckId(Long DeckId, Sort sort);
-    List<Card> findAllByCardStatusAndDeckId(Long DeckId,CardStatus cardStatus, Sort sort);
+
+    List<Card> findAllByCardStatusAndDeckIdOrderByPositionAsc(CardStatus cardStatus,Long DeckId);
 
     List<Card> findAllByDeckIdOrderByPositionAsc(Long deckId);
 }
