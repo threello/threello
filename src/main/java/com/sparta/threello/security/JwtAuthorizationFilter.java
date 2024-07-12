@@ -11,6 +11,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,7 +38,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
+
         String accessToken = jwtUtil.getAccessTokenFromHeader(request);
 
         if (StringUtils.hasText(accessToken)) {
@@ -45,9 +50,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 validToken(accessToken);
             } else {
                 invalidToken(request, response);
+                return; // 유효하지 않은 토큰일 경우 여기서 처리 후 종료
             }
         }
-
         filterChain.doFilter(request, response);
     }
 
@@ -89,11 +94,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     // 인증 처리
     private void setAuthentication(String email) {
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(email);
-        context.setAuthentication(authentication);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-        SecurityContextHolder.setContext(context);
+        // 예외 처리
+        if (userDetails == null)  {
+            throw new CustomException(ErrorType.NOT_FOUND_USER);
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     // 인증 객체 생성
@@ -101,4 +110,5 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
+
 }
