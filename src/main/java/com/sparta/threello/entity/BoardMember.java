@@ -1,5 +1,6 @@
 package com.sparta.threello.entity;
 
+import com.sparta.threello.enums.BoardMemberPermission;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,14 @@ public class BoardMember extends Timestamped{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
+
+    //보드의 생성자인지, 초대된 멤버인지 구분하기 위한 컬럼
+    @Column(nullable = false)
+    private BoardMemberPermission permission;
+
+    public BoardMember(User user, Board board, BoardMemberPermission permission) {
+        this.user = user;
+        this.board = board;
+        this.permission = permission;
+    }
 }

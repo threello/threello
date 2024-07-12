@@ -17,6 +17,7 @@ public enum ErrorType {
     // board
     NOT_FOUND_BOARD(HttpStatus.LOCKED, "존재하지 않는 보드입니다."),
     ALREADY_INVITED_USER(HttpStatus.LOCKED, "이미 해당 유저가 보드에 초대 되어있습니다."),
+    CANNOT_INVITE_SELF(HttpStatus.LOCKED, "자기 자신을 초대할 수 없습니다."),
 
     // deck(column)
     ALREADY_EXIST_DECK_TITLE(HttpStatus.NOT_FOUND, "이미 존재하는 컬럼 타이틀 입니다."),
