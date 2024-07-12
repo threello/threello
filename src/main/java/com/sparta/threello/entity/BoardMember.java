@@ -28,6 +28,7 @@ public class BoardMember extends Timestamped{
 
     //보드의 생성자인지, 초대된 멤버인지 구분하기 위한 컬럼
     @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
     private BoardMemberPermission permission;
 
     public BoardMember(User user, Board board, BoardMemberPermission permission) {

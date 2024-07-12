@@ -1,0 +1,97 @@
+//############## MANAGER 회원가입 #############//
+//###########################################//
+
+### 회원가입 (MANAGER 1)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "manager1@naver.com",
+  "password": "Managerr1!",
+  "name" : "김예현",
+  "userType" : "MANAGER"
+}
+
+### 회원가입 (MANAGER 2)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "manager2@naver.com",
+  "password": "Managerr2!",
+  "name" : "어동선",
+  "userType" : "MANAGER"
+}
+
+### 회원가입 (MANAGER 3)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "manager3@naver.com",
+  "password": "Managerr3!",
+  "name" : "한근형",
+  "userType" : "MANAGER"
+}
+
+
+### 로그인 (MANAGER 1)
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "manager1@naver.com",
+  "password": "Managerr1!"
+}
+
+> {%
+    client.log(response.headers.valueOf("accessToken"));
+    client.log(response.headers.valueOf("refreshToken"));
+    client.global.set("accessToken", response.headers.valueOf("accessToken"));
+    client.global.set("refreshToken", response.headers.valueOf("refreshToken"));
+%}
+
+### 로그인 (MANAGER 2)
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "manager2@naver.com",
+  "password": "Managerr1!"
+}
+
+> {%
+    client.log(response.headers.valueOf("accessToken"));
+    client.log(response.headers.valueOf("refreshToken"));
+    client.global.set("accessToken", response.headers.valueOf("accessToken"));
+    client.global.set("refreshToken", response.headers.valueOf("refreshToken"));
+%}
+
+### 로그인 (MANAGER 3)
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "manager3@naver.com",
+  "password": "Managerr3!"
+}
+
+> {%
+    client.log(response.headers.valueOf("accessToken"));
+    client.log(response.headers.valueOf("refreshToken"));
+    client.global.set("accessToken", response.headers.valueOf("accessToken"));
+    client.global.set("refreshToken", response.headers.valueOf("refreshToken"));
+%}
+
+
+
+
+### 로그아웃 (MANAGER)
+POST http://localhost:8080/users/logout
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+> {%
+    client.global.clear("accessToken");
+    client.global.clear("refreshToken");
+%}

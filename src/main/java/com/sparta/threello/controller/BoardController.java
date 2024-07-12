@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
@@ -33,33 +35,33 @@ public class BoardController {
      * @param userDetails 회원 정보
      * @return status.code, message, responseDto
      **/
-//    @GetMapping("/owner")
-//    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getOwnerBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        List<BoardResponseDto> responseDtoList = boardService.getOwnerBoards(userDetails.getUser());
-//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
-//    }
+    @GetMapping("/owner")
+    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getOwnerBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<BoardResponseDto> responseDtoList = boardService.getOwnerBoards(userDetails.getUser());
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
+    }
 
     /**
      * [getOwnerBoards] member 타입(초대된) 보드 불러오기
      * @param userDetails 회원 정보
      * @return status.code, message, responseDto
      **/
-//    @GetMapping("/member")
-//    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getMemberBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        List<BoardResponseDto> responseDtoList = boardService.getMemberBoards(userDetails.getUser());
-//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
-//    }
+    @GetMapping("/member")
+    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getMemberBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        List<BoardResponseDto> responseDtoList = boardService.getMemberBoards(userDetails.getUser());
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
+    }
 
     /**
      * [updateBoard] 보드 수정하기
      * @param userDetails 회원 정보
      * @return status.code, message, responseDto
      **/
-//    @PutMapping("/{boardId}")
-//    public ResponseEntity<ResponseDataDto<BoardResponseDto>> updateBoard(@Valid @RequestBody BoardRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        BoardResponseDto responseDto = boardService.updateBoard(boardId, requestDto, userDetails.getUser());
-//        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_UPDATE_SUCCESS, responseDto));
-//    }
+    @PutMapping("/{boardId}")
+    public ResponseEntity<ResponseDataDto<BoardResponseDto>> updateBoard(@Valid @RequestBody BoardRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        BoardResponseDto responseDto = boardService.updateBoard(boardId, requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_UPDATE_SUCCESS, responseDto));
+    }
 
     /**
      * [deleteBoard] 보드 삭제하기
@@ -67,11 +69,11 @@ public class BoardController {
      * @param boardId 보드 아이디
      * @return status.code, message
      **/
-//    @DeleteMapping("/{boardId}")
-//    public ResponseEntity<ResponseMessageDto> deleteBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        boardService.deleteBoard(boardId, userDetails.getUser());
-//        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_DELETE_SUCCESS));
-//    }
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<ResponseMessageDto> deleteBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boardService.deleteBoard(boardId, userDetails.getUser());
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_DELETE_SUCCESS));
+    }
 
     /**
      * [inviteBoardMember] 보드 초대하기
@@ -79,9 +81,9 @@ public class BoardController {
      * @param boardId     보드 아이디
      * @return status.code, message
      **/
-//    @PostMapping("/{boardId}/invite")
-//    public ResponseEntity<ResponseMessageDto> inviteBoardMember(@Valid @RequestBody InviteRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        boardService.inviteBoardMember(requestDto, boardId, userDetails.getUser());
-//        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_INVITE_MEMBER_SUCCESS));
-//    }
+    @PostMapping("/{boardId}/invite")
+    public ResponseEntity<ResponseMessageDto> inviteBoardMember(@Valid @RequestBody InviteRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boardService.inviteBoardMember(boardId, requestDto, userDetails.getUser());
+        return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_INVITE_MEMBER_SUCCESS));
+    }
 }
