@@ -24,7 +24,7 @@ public class CardRepositoryImpl implements CardRepositoryCustom {
                 .join(cardMember.card, card)
                 .where(card.deck.id.eq(deckId)
                         .and(cardMember.user.id.eq(userId)))
-                .orderBy(card.createdAt.asc())
+                .orderBy(card.position.asc())
                 .fetch();
     }
 }
