@@ -1,9 +1,13 @@
 package com.sparta.threello.entity;
 
 import com.sparta.threello.dto.CardDetailRequestDto;
+import com.sparta.threello.dto.CreateCardRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -21,9 +25,19 @@ public class CardDetail extends Timestamped {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
-    public CardDetail(String description, Card card) {
-        this.description = description;
-        this.card = card;
+
+
+    /*연관관계 편의 메서드*/
+    public CardDetail(CreateCardRequestDto requestDto, Card card) {
+        this.description=requestDto.getDescription();
+        this.card=card;
+        card.setCardDetail(this);
+    }
+
+    public CardDetail(CardDetailRequestDto requestDto, Card card) {
+        this.description = requestDto.getDescription();
+        this.card=card;
+        card.setCardDetail(this);
     }
 
 

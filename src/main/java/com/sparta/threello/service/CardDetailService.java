@@ -27,7 +27,7 @@ public class CardDetailService {
     public ResponseDataDto createCardDetail(Long cardId, CardDetailRequestDto requestDto) {
         Card card = cardRepository.findById(cardId).
                 orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARD));
-        CardDetail cardDetail = new CardDetail(requestDto.getDescription(), card);
+        CardDetail cardDetail = new CardDetail(requestDto, card);
         cardDetailRepository.save(cardDetail);
         CardDetailResponseDto responseDto = new CardDetailResponseDto(cardDetail);
         return new ResponseDataDto(ResponseStatus.CARDDETAIL_CREATE_SUCCESS, responseDto);

@@ -7,23 +7,25 @@ import com.sparta.threello.dto.ResponseDataDto;
 import com.sparta.threello.dto.ResponseMessageDto;
 import com.sparta.threello.dto.UpdateCardPositionRequestDto;
 import com.sparta.threello.dto.UpdateCardRequestDto;
-import com.sparta.threello.entity.Card;
-import com.sparta.threello.entity.CardMember;
-import com.sparta.threello.entity.Deck;
-import com.sparta.threello.entity.User;
+import com.sparta.threello.entity.*;
 import com.sparta.threello.enums.CardStatus;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.exception.CustomException;
+import com.sparta.threello.repository.CardDetailRepository;
 import com.sparta.threello.repository.CardMemberRepository;
 import com.sparta.threello.repository.DeckRepository;
+import com.sparta.threello.repository.UserRepository;
 import com.sparta.threello.repository.cardRepository.CardRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.sparta.threello.entity.QCard.card;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardService {
@@ -31,21 +33,38 @@ public class CardService {
     private final CardRepository cardRepository;
     private final DeckRepository deckRepository;
     private final CardMemberRepository cardMemberRepository;
+    private final CardDetailRepository cardDetailRepository;
+    private final UserRepository userRepository;
 
     //카드 생성
+    @Transactional
     public ResponseDataDto createCard(Long deckId,
-            CreateCardRequestDto requestDto, User user) {
+                                      CreateCardRequestDto requestDto, User user) {
         //덱 조회
         Deck deck = deckRepository.findById(deckId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_DECK));
-        //카드 생성
-        Card card = new Card(requestDto.getTitle(), requestDto.getPosition(), CardStatus.PROCESSING,
-                requestDto.getCardDeckPosition(), deck);
+
+
         //카드 저장
+        Card card = new Card(requestDto, deck);
         cardRepository.save(card);
+        cardRepository.flush();
+
+        if (requestDto.getEmailOfCardManager()!=null) {
+            User cardManager = userRepository.findByEmail(requestDto.getEmailOfCardManager())
+                    .orElseThrow(()->new CustomException(ErrorType.NOT_FOUND_USER));
+            CardMember cardMember = new CardMember(card,user);
+            cardMemberRepository.save(cardMember);
+        }
+
+        //카드 디테일 저장
+        CardDetail cardDetail = new CardDetail(requestDto, card);
+        cardDetailRepository.save(cardDetail);
         //카드 응답 DTO 생성
         CardResponseDto responseDto = new CardResponseDto(card);
         return new ResponseDataDto(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
+
+
     }
 
     //카드 전체 조회
@@ -73,7 +92,7 @@ public class CardService {
     //상태별 카드 조회
     public ResponseDataDto getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
         Sort sort = Sort.by("createdAt").ascending(); // 생성 일자로 오름차순 정렬
-        List<Card> cardList = cardRepository.findAllByCardStatusAndDeckId(deckId,requestDto.getCardStatus(), sort);
+        List<Card> cardList = cardRepository.findAllByCardStatusAndDeckId(deckId, requestDto.getCardStatus(), sort);
         List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
         return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardResponseDataList);
     }

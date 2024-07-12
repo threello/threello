@@ -1,8 +1,15 @@
 package com.sparta.threello.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.sparta.threello.entity.Card;
+import com.sparta.threello.entity.CardDetail;
+import com.sparta.threello.enums.CardStatus;
 import jakarta.validation.constraints.NotBlank;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
 
@@ -10,7 +17,17 @@ import org.springframework.validation.annotation.Validated;
 public class CreateCardRequestDto {
     @NotBlank(message="제목 입력은 필수입니다.")
     private String title;
-    @NotBlank(message="카드덱포지션 입력은 필수입니다.")
-    private String cardDeckPosition;
+
     private Long position;
+
+    private CardStatus cardStatus;
+
+    private String description;
+
+    private String emailOfCardManager;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dueAt;
+
+
 }

@@ -26,7 +26,7 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "email": "manager@naver.com",
+  "email": "manager2@naver.com",
   "password": "Managerr0!"
 }
 
@@ -48,4 +48,7 @@ refreshToken: {{refreshToken}}
     client.global.clear("accessToken");
     client.global.clear("refreshToken");
 %}
+
+### 카드생성
+P
 
