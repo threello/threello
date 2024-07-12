@@ -1,11 +1,9 @@
 package com.sparta.threello.controller;
 
 
-import com.sparta.threello.dto.PasswordRequestDto;
-import com.sparta.threello.dto.ResponseMessageDto;
-import com.sparta.threello.dto.SignupRequestDto;
+import com.sparta.threello.dto.*;
 import com.sparta.threello.enums.ResponseStatus;
-import com.sparta.threello.jwt.JwtUtil;
+import com.sparta.threello.jwt.JwtProvider;
 import com.sparta.threello.repository.UserRepository;
 import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.UserService;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final UserService userService;
 
@@ -45,8 +43,8 @@ public class UserController {
      */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetailsImpl details, HttpServletRequest request) {
-        String accessToken = jwtUtil.getAccessTokenFromHeader(request);
-        String refreshToken = jwtUtil.getRefreshTokenFromHeader(request);
+        String accessToken = jwtProvider.getAccessTokenFromHeader(request);
+        String refreshToken = jwtProvider.getRefreshTokenFromHeader(request);
 
         userService.logout(details.getUser(), accessToken, refreshToken);
 
