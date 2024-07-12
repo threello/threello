@@ -37,7 +37,7 @@ refreshToken: {{refreshToken}}
   "position" : 1,
   "description": "12345",
   "emailOfCardManager": "manager2@naver.com",
-  "dueAt": "2024-12-31"
+  "dueAt": "2024-12-01"
 
 
 }

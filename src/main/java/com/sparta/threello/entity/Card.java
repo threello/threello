@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,7 +37,7 @@ public class Card extends Timestamped{
 
     //마감일자
     @Column
-    private LocalDateTime dueAt;
+    private LocalDate dueAt;
 
     //Deck 과 join
     @ManyToOne
@@ -53,6 +54,7 @@ public class Card extends Timestamped{
         this.cardStatus=requestDto.getCardStatus();
         this.position = requestDto.getPosition();
         this.cardDeckPosition = deck.getTitle();
+        this.dueAt = requestDto.getDueAt();
     }
 
 //    public Card(String title, Long position, CardStatus cardStatus, Deck deck) {
