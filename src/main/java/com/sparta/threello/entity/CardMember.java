@@ -20,4 +20,9 @@ public class CardMember extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
+
+    public CardMember(User user, Card card) {
+        this.user = user;
+        this.card = card;
+    }
 }
