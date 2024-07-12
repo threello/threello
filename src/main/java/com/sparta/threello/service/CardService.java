@@ -1,5 +1,6 @@
 package com.sparta.threello.service;
 
+import com.sparta.threello.dto.CardResponseDto;
 import com.sparta.threello.dto.CreateCardRequestDto;
 import com.sparta.threello.dto.GetStatusCardRequestDto;
 import com.sparta.threello.dto.ResponseDataDto;
@@ -32,7 +33,7 @@ public class CardService {
     private final CardMemberRepository cardMemberRepository;
 
     //카드 생성
-    public ResponseMessageDto createCard(Long deckId,
+    public ResponseDataDto createCard(Long deckId,
             CreateCardRequestDto requestDto, User user) {
         //덱 조회
         Deck deck = deckRepository.findById(deckId)
@@ -46,33 +47,39 @@ public class CardService {
         CardMember cardMember = new CardMember(user, card);
         //카드 멤버 저장
         cardMemberRepository.save(cardMember);
-        return new ResponseMessageDto(ResponseStatus.CARD_CREATE_SUCCESS);
+        //카드 응답 DTO 생성
+        CardResponseDto responseDto = new CardResponseDto(card);
+        return new ResponseDataDto(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
     }
 
     //카드 전체 조회
     public ResponseDataDto getCards(Long deckId) {
         Sort sort = Sort.by("createdAt").ascending(); // 생성 일자로 오름차순 정렬
         List<Card> cardList = cardRepository.findAllByDeckId(deckId, sort);
-        return new ResponseDataDto(ResponseStatus.CARDS_READ_SUCCESS, cardList);
+        List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
+        return new ResponseDataDto(ResponseStatus.CARDS_READ_SUCCESS, cardResponseDataList);
     }
 
     //특정 카드 조회
     public ResponseDataDto getCard(Long cardId) {
         Card card = cardRepository.findById(cardId).orElse(null);
-        return new ResponseDataDto(ResponseStatus.CARD_READ_SUCCESS, card);
+        CardResponseDto cardResponseDto = new CardResponseDto(card);
+        return new ResponseDataDto(ResponseStatus.CARD_READ_SUCCESS, cardResponseDto);
     }
 
     //작업자별 카드 조회
     public ResponseDataDto getUserCards(Long deckId, Long userId) {
         List<Card> cardList = cardRepository.findAllByDeckIdAndUserId(deckId, userId);
-        return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS, cardList);
+        List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
+        return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS, cardResponseDataList);
     }
 
     //상태별 카드 조회
     public ResponseDataDto getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
         Sort sort = Sort.by("createdAt").ascending(); // 생성 일자로 오름차순 정렬
         List<Card> cardList = cardRepository.findAllByCardStatus(requestDto.getCardStatus(), sort);
-        return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardList);
+        List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
+        return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardResponseDataList);
     }
 
     //카드 수정
@@ -90,7 +97,8 @@ public class CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARD));
         card.updatePosition(requestDto);
-        return new ResponseDataDto(ResponseStatus.CARD_POSITION_UPDATE_SUCCESS, card);
+        CardResponseDto responseDto = new CardResponseDto(card);
+        return new ResponseDataDto(ResponseStatus.CARD_POSITION_UPDATE_SUCCESS, responseDto);
     }
 
     //카드 삭제
