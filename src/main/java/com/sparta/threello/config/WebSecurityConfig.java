@@ -1,7 +1,7 @@
 package com.sparta.threello.config;
 
 
-import com.sparta.threello.jwt.JwtProvider;
+import com.sparta.threello.jwt.JwtUtil;
 import com.sparta.threello.repository.UserRepository;
 import com.sparta.threello.security.*;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,14 +44,14 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider, userRepository);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtProvider, userDetailsService);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
     }
 
     @Bean

@@ -3,7 +3,7 @@ package com.sparta.threello.security;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.UserType;
 import com.sparta.threello.exception.CustomException;
-import com.sparta.threello.jwt.JwtProvider;
+import com.sparta.threello.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,20 +23,20 @@ import java.io.IOException;
 @Slf4j(topic = "JWT 인가 필터")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
+    private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtAuthorizationFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService) {
-        this.jwtProvider = jwtProvider;
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
+        this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = jwtProvider.getAccessTokenFromHeader(request);
+        String accessToken = jwtUtil.getAccessTokenFromHeader(request);
 
         if (StringUtils.hasText(accessToken)) {
-            if (jwtProvider.validateToken(accessToken)) {
+            if (jwtUtil.validateToken(accessToken)) {
                 validToken(accessToken, request);
             } else {
                 invalidToken(response);
@@ -47,7 +47,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private void validToken(String token, HttpServletRequest request) {
-        Claims info = jwtProvider.getUserInfoFromToken(token);
+        Claims info = jwtUtil.getUserInfoFromToken(token);
 
         try {
             setAuthentication(info.getSubject());
@@ -59,17 +59,17 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private void invalidToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = jwtProvider.getRefreshTokenFromHeader(request);
+        String refreshToken = jwtUtil.getRefreshTokenFromHeader(request);
 
         if (StringUtils.hasText(refreshToken)) {
-            if (jwtProvider.validateToken(refreshToken) && jwtProvider.existRefreshToken(refreshToken)) {
-                Claims info = jwtProvider.getUserInfoFromToken(refreshToken);
+            if (jwtUtil.validateToken(refreshToken) && jwtUtil.existRefreshToken(refreshToken)) {
+                Claims info = jwtUtil.getUserInfoFromToken(refreshToken);
 
                 UserType type = UserType.valueOf(info.get("type").toString());
 
-                String newAccessToken = jwtProvider.createToken(info.getSubject(), type);
+                String newAccessToken = jwtUtil.createToken(info.getSubject(), type);
 
-                jwtProvider.setHeaderAccessToken(response, newAccessToken);
+                jwtUtil.setHeaderAccessToken(response, newAccessToken);
 
                 try {
                     setAuthentication(info.getSubject());

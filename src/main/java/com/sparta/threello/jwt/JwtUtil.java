@@ -25,14 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j(topic = "JwtProvider")
-public class JwtProvider {
-
+@Slf4j(topic = "JwtUtil")
+public class JwtUtil {
     // Header KEY 값
     public static final String AUTH_ACCESS_HEADER = "AccessToken";
     public static final String AUTH_REFRESH_HEADER = "RefreshToken";
     public static final String AUTHORIZATION_KEY = "auth";
-
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
 

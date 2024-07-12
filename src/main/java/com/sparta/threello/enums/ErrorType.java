@@ -36,7 +36,8 @@ public enum ErrorType {
     LOGGED_OUT_TOKEN(HttpStatus.FORBIDDEN, "이미 로그아웃된 토큰입니다."),
     INVALID_JWT(HttpStatus.UNAUTHORIZED, "유효하지 않는 JWT 입니다."),
     EXPIRED_JWT(HttpStatus.FORBIDDEN, "만료된 JWT 입니다."),
-    REQUIRES_LOGIN(HttpStatus.FORBIDDEN, "로그인이 필요한 서비스입니다.");
+    REQUIRES_LOGIN(HttpStatus.FORBIDDEN, "로그인이 필요한 서비스입니다.")
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
