@@ -71,7 +71,7 @@ public class CardService {
 
     }
 
-    //카드 전체 조회(deck별)
+    //카드 전체 조회(deck별) JpaRepository 이용하여 포지션순으로 카드 정렬
     public ResponseDataDto getCards(Long deckId) {
 
         List<Card> cardList = cardRepository.findAllByDeckIdOrderByPositionAsc(deckId);// position별로 오름차순 정렬
@@ -86,7 +86,7 @@ public class CardService {
         return new ResponseDataDto(ResponseStatus.CARD_READ_SUCCESS, cardResponseDto);
     }
 
-    //작업자별 카드 조회(덱별로)
+    //작업자별 카드 조회(덱별로) QueryDsl 이용하여 포지션순으로 카드 정렬
     public ResponseDataDto getUserCards(Long deckId, Long userId) {
         List<Card> cardList = cardRepository.findAllByDeckIdAndUserId(deckId, userId);
         List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
