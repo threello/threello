@@ -3,10 +3,12 @@ package com.sparta.threello.controller;
 import com.sparta.threello.dto.*;
 import com.sparta.threello.entity.Deck;
 import com.sparta.threello.enums.ResponseStatus;
+import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.DeckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -18,15 +20,16 @@ public class DeckController {
     /**
      * 덱 생성
      * @param deckRequestDto 요청 객체
-     * //@param userDetails 회원 정보
+     * @param userDetails 회원 정보
      * @return status.code, message
      **/
     @PostMapping
     public ResponseEntity<ResponseDataDto<DeckResponseDto>> createDeck(
             @PathVariable long boardId,
-            @RequestBody DeckRequestDto deckRequestDto/*,
-            @AuthenticationPrincipal UserDetailsImpl authentication*/) {
-        ResponseDataDto<DeckResponseDto> responseDto = deckService.createDeck(boardId, deckRequestDto/*, authentication*/);
+            @RequestBody DeckRequestDto deckRequestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ResponseDataDto<DeckResponseDto> responseDto = deckService.createDeck(
+                boardId, deckRequestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_CREATE_SUCCESS, responseDto).getData());
     }
 
@@ -83,8 +86,11 @@ public class DeckController {
      * @return status.code, message
      **/
     @DeleteMapping("/{deckId}")
-    public ResponseEntity<ResponseMessageDto> deleteDeck(@PathVariable Long boardId, @PathVariable Long deckId) {
-        ResponseMessageDto responseDto = deckService.deleteDeck(boardId, deckId);
+    public ResponseEntity<ResponseMessageDto> deleteDeck(
+            @PathVariable Long boardId,
+            @PathVariable Long deckId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        ResponseMessageDto responseDto = deckService.deleteDeck(boardId, deckId, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS));
     }
 
@@ -100,9 +106,10 @@ public class DeckController {
     public ResponseEntity<ResponseDataDto<DeckResponseDto>> updateDeckPosition(
             @PathVariable Long boardId,
             @PathVariable Long deckId,
-            @RequestBody DeckRequestDto requestDto) {
+            @RequestBody DeckRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         ResponseDataDto<DeckResponseDto> responseDto =
-                deckService.updateDeckPosition(boardId, deckId, requestDto);
+                deckService.updateDeckPosition(boardId, deckId, requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, responseDto).getData());
     }
 
