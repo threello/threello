@@ -47,7 +47,13 @@ public enum ResponseStatus {
     COMMENTS_READ_SUCCESS(HttpStatus.OK, "전체 댓글 조회에 성공하였습니다."),
     COMMENT_READ_SUCCESS(HttpStatus.OK, "댓글 조회에 성공하였습니다."),
     COMMENT_UPDATE_SUCCESS(HttpStatus.OK, "댓글 수정에 성공하였습니다."),
-    COMMENT_DELETE_SUCCESS(HttpStatus.OK, "댓글 삭제에 성공하였습니다.")
+    COMMENT_DELETE_SUCCESS(HttpStatus.OK, "댓글 삭제에 성공하였습니다."),
+
+    // 카드 상세
+    CARDDETAIL_CREATE_SUCCESS(HttpStatus.OK, "카드 상세 생성에 성공하였습니다."),
+    CARDDETAIL_READ_SUCCESS(HttpStatus.OK, "카드 상세 조회에 성공하였습니다."),
+    CARDDETAIL_UPDATE_SUCCESS(HttpStatus.OK, "카드 상세 수정에 성공하였습니다."),
+    CARDDETAIL_DELETE_SUCCESS(HttpStatus.OK, "카드 상세 삭제에 성공하였습니다."),
     ;
 
     private final HttpStatus httpStatus;
