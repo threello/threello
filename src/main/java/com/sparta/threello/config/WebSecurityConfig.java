@@ -1,6 +1,7 @@
 package com.sparta.threello.config;
 
 
+import com.sparta.threello.enums.UserType;
 import com.sparta.threello.jwt.JwtProvider;
 import com.sparta.threello.repository.UserRepository;
 import com.sparta.threello.security.*;
@@ -72,9 +73,20 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 요청 허가
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/users/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/boards").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/boards/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/boards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/boards/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/boards/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/boards/**/invite").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/columns/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/columns/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/columns/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/columns/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.GET, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers("/users/**").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
