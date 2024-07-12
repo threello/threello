@@ -22,11 +22,11 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response); // JwtAuthenticationFilter 실행
         } catch (CustomException e) {
             System.out.println("test");
-            hadleAuthenticationException(response, e.getErrorType());
+            handleAuthenticationException(response, e.getErrorType());
         }
     }
 
-    private void hadleAuthenticationException(HttpServletResponse response, ErrorType errorType) throws IOException {
+    private void handleAuthenticationException(HttpServletResponse response, ErrorType errorType) throws IOException {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
