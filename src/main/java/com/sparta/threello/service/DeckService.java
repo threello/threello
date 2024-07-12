@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Transactional
 @RequiredArgsConstructor
 @Service
 public class DeckService {
@@ -70,6 +69,7 @@ public class DeckService {
 
     /** [updateDeck()] 덱 수정
      **/
+    @Transactional
     public ResponseDataDto<DeckResponseDto> updateDeck(Long boardId, Long deckId, DeckRequestDto requestDto) {
 
         Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
@@ -92,6 +92,7 @@ public class DeckService {
 
     /** [deleteDeck()] 덱 삭제
      **/
+    @Transactional
     public ResponseMessageDto deleteDeck(Long boardId, Long deckId, User loginUser) {
 
         Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
@@ -110,6 +111,7 @@ public class DeckService {
 
     /** [updateDeck()] 덱 포지션 변경
      **/
+    @Transactional
     public ResponseDataDto<DeckResponseDto> updateDeckPosition(Long boardId, Long deckId, DeckRequestDto requestDto, User loginUser) {
 
         Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
