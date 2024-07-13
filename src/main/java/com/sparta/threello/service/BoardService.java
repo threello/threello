@@ -65,7 +65,7 @@ public class BoardService {
 
         //[예외 1] - 조회된 리스트가 없으면
         if (ownerBoardMembers.isEmpty()) {
-            throw new CustomException(ErrorType.NOT_FOUND_BOARD);
+            throw new CustomException(ErrorType.NOT_CREATE_BOARD);
         }
 
 
@@ -88,7 +88,7 @@ public class BoardService {
 
         //[예외 1] - 조회된 리스트가 없으면
         if (boardMembers.isEmpty()) {
-            throw new CustomException(ErrorType.NOT_FOUND_BOARD);
+            throw new CustomException(ErrorType.NOT_EXIST_BOARDS);
         }
 
         List<BoardResponseDto> boardMemberList = boardMembers.stream()

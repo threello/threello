@@ -16,6 +16,8 @@ public enum ErrorType {
 
     // board
     NOT_FOUND_BOARD(HttpStatus.LOCKED, "존재하지 않는 보드입니다."),
+    NOT_CREATE_BOARD(HttpStatus.LOCKED, "생성한 보드가 없습니다."),
+    NOT_EXIST_BOARDS(HttpStatus.LOCKED, "초대받은 보드가 없습니다."),
     ALREADY_INVITED_USER(HttpStatus.LOCKED, "이미 해당 유저가 보드에 초대 되어있습니다."),
     CANNOT_INVITE_SELF(HttpStatus.LOCKED, "자기 자신을 초대할 수 없습니다."),
 

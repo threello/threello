@@ -1,9 +1,7 @@
 package com.sparta.threello.controller;
 
 
-import com.sparta.threello.dto.PasswordRequestDto;
-import com.sparta.threello.dto.ResponseMessageDto;
-import com.sparta.threello.dto.SignupRequestDto;
+import com.sparta.threello.dto.*;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.jwt.JwtUtil;
 import com.sparta.threello.repository.UserRepository;
@@ -55,13 +53,25 @@ public class UserController {
 
     /**
      * 회원 상태 비활성화
-     * @param passwordRequest 비밀번호
-     * @param details 회원 정보
+     * @param requestDto 비밀번호
+     * @param userDetails 회원 정보
      * @return 응답 상태
      */
     @PatchMapping
     public ResponseEntity<?> deactiveUser(@RequestBody PasswordRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deactivateUser(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DEACTIVATE_USER_SUCCESS));
+    }
+
+    /**
+     * 회원 조회
+     * @param userDetails 회원 정보
+     * @return 응답 상태
+     */
+    @GetMapping
+    public ResponseEntity<ResponseDataDto<UserProfileResponseDto>> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        System.out.println("test");
+        UserProfileResponseDto responseDto = userService.getUserProfile(userDetails.getUser());
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.GET_USER_SUCCESS, responseDto));
     }
 }

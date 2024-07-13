@@ -14,6 +14,7 @@ public enum ResponseStatus {
     // 로그인
     LOGIN_SUCCESS(HttpStatus.OK, "로그인에 성공하였습니다."),
     LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃에 성공하였습니다."),
+    GET_USER_SUCCESS(HttpStatus.OK, "유저정보 조회에 성공하였습니다."),
 
     // 보드
     BOARD_CREATE_SUCCESS(HttpStatus.OK, "보드 생성에 성공하였습니다."),

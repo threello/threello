@@ -3,6 +3,7 @@ package com.sparta.threello.service;
 import com.sparta.threello.dto.PasswordRequestDto;
 import com.sparta.threello.dto.SignupRequestDto;
 import com.sparta.threello.dto.SignupResponseDto;
+import com.sparta.threello.dto.UserProfileResponseDto;
 import com.sparta.threello.entity.User;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.UserStatus;
@@ -71,6 +72,13 @@ public class UserService {
             throw new CustomException(ErrorType.INVALID_PASSWORD);
         }
         user.deactivateUser();
+    }
+
+    //유저정보 조회
+    @Transactional
+    public UserProfileResponseDto getUserProfile(User userLogin) {
+        System.out.println(userLogin.getId());
+        return new UserProfileResponseDto(userLogin);
     }
 }
 

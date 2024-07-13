@@ -57,7 +57,7 @@ Content-Type: application/json
 
 {
   "email": "manager2@naver.com",
-  "password": "Managerr1!"
+  "password": "Managerr2!"
 }
 
 > {%
@@ -82,6 +82,12 @@ Content-Type: application/json
     client.global.set("accessToken", response.headers.valueOf("accessToken"));
     client.global.set("refreshToken", response.headers.valueOf("refreshToken"));
 %}
+
+
+### 유저정보 조회
+GET http://localhost:8080/users
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
 
 
 

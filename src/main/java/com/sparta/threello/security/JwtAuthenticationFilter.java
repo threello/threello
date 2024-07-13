@@ -81,8 +81,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("refreshToken = " + refreshToken);
 
         //http reqeust test를 위해 header에 토큰값을 추가하였습니다. http 테스트를 하지 않을 경우 주석해야합니다.
-        response.addHeader(JwtUtil.AUTH_ACCESS_HEADER, accessToken);
-        response.addHeader(JwtUtil.AUTH_REFRESH_HEADER, refreshToken);
+        response.setHeader("Access-Control-Expose-Headers", "AccessToken, RefreshToken");
 
         // 로그인 성공 메시지
         response.setContentType("application/json");

@@ -5,7 +5,7 @@ refreshToken: {{refreshToken}}
 Content-Type: application/json
 
 {
-  "title": "board_01",
+  "title": "동선님의 보드입니다",
   "description": "보드를 생성하였습니다."
 }
 
@@ -22,13 +22,13 @@ refreshToken: {{refreshToken}}
 
 
 ### 보드에 MEMBER 초대하기 (USER 1) 초대
-POST http://localhost:8080/boards/1/invite
+POST http://localhost:8080/boards/3/invite
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 Content-Type: application/json
 
 {
-  "email" : "user@naver.com"
+  "email" : "manager1@naver.com"
 }
 
 
