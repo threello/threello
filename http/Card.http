@@ -136,3 +136,21 @@ DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers/{{cardMemb
 Content-Type: application/json
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
+
+###카드 상세 수정
+PATCH http://localhost:8080/cards/{{cardId}}/cardDetails
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "description": "내용3"
+}
+
+
+###카드 상세 조회
+GET http://localhost:8080/cards/{{cardId}}/cardDetails
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
