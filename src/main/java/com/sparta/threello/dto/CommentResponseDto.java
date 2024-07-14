@@ -9,6 +9,7 @@ import lombok.Getter;
 public class CommentResponseDto {
     private Long id;
     private Long userId;
+    private String username;
     private String description;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
@@ -18,6 +19,7 @@ public class CommentResponseDto {
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
         this.userId = comment.getUser().getId();
+        this.username = comment.getUser().getName();
         this.description = comment.getDescription();
         this.createdAt = comment.getCreatedAt();
         this.modifiedAt = comment.getModifiedAt();
