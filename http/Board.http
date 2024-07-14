@@ -5,7 +5,7 @@ refreshToken: {{refreshToken}}
 Content-Type: application/json
 
 {
-  "title": "동선님의 보드입니다",
+  "title": "예현님의 보드입니다",
   "description": "보드를 생성하였습니다."
 }
 
