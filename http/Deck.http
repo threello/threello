@@ -1,6 +1,6 @@
 ### boardId, deckId 설정
-@boardId = 1
-@deckId = 4
+@boardId = 2
+@deckId = 1
 
 ### 덱 생성
 POST http://localhost:8080/boards/{{boardId}}/decks
@@ -9,8 +9,8 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title": "delete",
-  "position": 3
+  "title": "todo",
+  "position": 1
 }
 
 

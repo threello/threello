@@ -1,6 +1,7 @@
 package com.sparta.threello.service;
 
 import com.sparta.threello.dto.*;
+import com.sparta.threello.entity.Board;
 import com.sparta.threello.entity.Deck;
 import com.sparta.threello.entity.User;
 import com.sparta.threello.enums.ErrorType;
@@ -28,17 +29,18 @@ public class DeckService {
 
     /** [createDeck()] 덱 생성
      **/
-    public ResponseDataDto<DeckResponseDto> createDeck(long id, DeckRequestDto deckRequestDto, User loginUser) {
+    public ResponseDataDto<DeckResponseDto> createDeck(long boardId, DeckRequestDto deckRequestDto, User loginUser) {
 
         // 유저의 권한 확인 (UserType이 MANAGER만 생성가능)
         userAuthorityCheck(loginUser);
 
-        // 상태 이름 중복 체크 (상태 이름이 존재하는 경우)
-        if(deckRepository.findByTitle(deckRequestDto.getTitle()).isPresent()) {
+        // 같은 보드에 상태 이름 중복 체크 (상태 이름이 존재하는 경우)
+        Optional<Board> board = boardRepository.findById(boardId);
+        if(deckRepository.findByTitleAndBoard(deckRequestDto.getTitle(), board.get()).isPresent()) {
             throw new CustomException(ErrorType.ALREADY_EXIST_DECK_TITLE);
         }
 
-        Deck deck = new Deck(deckRequestDto.getTitle(), deckRequestDto.getPosition(), boardRepository.findById(id));
+        Deck deck = new Deck(deckRequestDto.getTitle(), deckRequestDto.getPosition(), boardRepository.findById(boardId));
 
         deckRepository.save(deck);
 
