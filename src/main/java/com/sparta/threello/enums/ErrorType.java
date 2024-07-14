@@ -28,6 +28,8 @@ public enum ErrorType {
     // Card(column)
     NOT_FOUND_CARD(HttpStatus.NOT_FOUND, "존재하지 않는 카드입니다."),
     NOT_FOUND_CARDDETAIL(HttpStatus.NOT_FOUND, "존재하지 않는 카드 상세입니다."),
+    NOT_FOUND_CARDMEMBER(HttpStatus.NOT_FOUND, "존재하지 않는 카드 멤버입니다."),
+    NOT_FOUND_CARDMEMBER_IN_CARD(HttpStatus.NOT_FOUND, "해당 카드 안에 해당 카드 멤버가 없습니다."),
     // comment
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
     NOT_FOUND_COMMENT_IN_CARD(HttpStatus.NOT_FOUND, "해당 카드 안에 해당 댓글이 없습니다."),

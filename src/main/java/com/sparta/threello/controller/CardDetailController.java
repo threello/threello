@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,30 +22,17 @@ public class CardDetailController {
 
     private final CardDetailService cardDetailService;
 
-    //카드 상세 생성
-    @PostMapping("/cards/{cardId}/cardDetails")
-    public ResponseEntity<ResponseDataDto> createCardDetail(@PathVariable Long cardId,
-            @RequestBody CardDetailRequestDto requestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(cardDetailService.createCardDetail(cardId, requestDto));
-    }
-
     //카드 상세 조회
-    @GetMapping("/cardDetails/{cardDetailsId}")
-    public ResponseEntity<ResponseDataDto> getCardDetail(@PathVariable Long cardDetailsId) {
-        return ResponseEntity.ok(cardDetailService.getCardDetail(cardDetailsId));
+    @GetMapping("/cards/{cardId}/cardDetails")
+    public ResponseEntity<ResponseDataDto> getCardDetail(@PathVariable Long cardId) {
+        return ResponseEntity.ok(cardDetailService.getCardDetail(cardId));
     }
 
     //카드 상세 수정
-    @PutMapping("/cardDetails/{cardDetailsId}")
-    public ResponseEntity<ResponseDataDto> updateCardDetail(@PathVariable Long cardDetailsId,
+    @PatchMapping("/cards/{cardId}/cardDetails")
+    public ResponseEntity<ResponseDataDto> updateCardDetail(@PathVariable Long cardId,
             @RequestBody CardDetailRequestDto requestDto) {
-        return ResponseEntity.ok(cardDetailService.updateCardDetail(cardDetailsId,requestDto));
+        return ResponseEntity.ok(cardDetailService.updateCardDetail(cardId,requestDto));
     }
 
-    //카드 상세 삭제
-    @DeleteMapping("/cardDetails/{cardDetailsId}")
-    public ResponseEntity<ResponseMessageDto> deleteCardDetail(@PathVariable Long cardDetailsId) {
-        return ResponseEntity.ok(cardDetailService.deleteCardDetail(cardDetailsId));
-    }
 }

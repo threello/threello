@@ -19,8 +19,8 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title": "todo22",
-  "position": 1
+  "title": "todo2",
+  "position": 2
 }
 
 
@@ -72,4 +72,83 @@ refreshToken: {{refreshToken}}
 {
    "cardStatus":"COMPLETED"
 }
+
+
+###댓글 생성
+POST http://localhost:8080/cards/{{cardId}}/cardDetails/comments
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "description": "comment"
+}
+
+
+###댓글 전체 조회
+GET http://localhost:8080/cards/{{cardId}}/cardDetails/comments
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+
+###댓글 수정
+@commentId=3
+PUT http://localhost:8080/cards/{{cardId}}/cardDetails/comments/{{commentId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "description" : "comment2"
+}
+
+###댓글 삭제
+DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/comments/{{commentId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+###카드 멤버 초대
+POST http://localhost:8080/cards/{{cardId}}/cardDetails/invite
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "email": "manager2@naver.com"
+}
+
+###카드 멤버 전체 조회
+GET http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+###카드 멤버 삭제
+@cardMemberId=11
+DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers/{{cardMemberId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+###카드 상세 수정
+PATCH http://localhost:8080/cards/{{cardId}}/cardDetails
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "description": "내용3"
+}
+
+
+###카드 상세 조회
+GET http://localhost:8080/cards/{{cardId}}/cardDetails
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
 

@@ -5,11 +5,10 @@ import com.sparta.threello.entity.*;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.exception.CustomException;
-import com.sparta.threello.repository.CardDetailRepository;
-import com.sparta.threello.repository.CardMemberRepository;
-import com.sparta.threello.repository.DeckRepository;
-import com.sparta.threello.repository.cardRepository.CardRepository;
+import com.sparta.threello.repository.*;
 import java.util.List;
+
+import com.sparta.threello.repository.cardRepository.CardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,11 +23,11 @@ public class CardService {
     private final DeckRepository deckRepository;
     private final CardMemberRepository cardMemberRepository;
     private final CardDetailRepository cardDetailRepository;
+    private final UserRepository userRepository;
 
     //카드 생성
     @Transactional
     public ResponseDataDto<CardResponseDto> createCard(Long deckId, CreateCardRequestDto requestDto, User user) {
-
         Deck deck = getDeck(deckId);
 
         Card card = saveCard(requestDto, deck);
@@ -37,7 +36,6 @@ public class CardService {
 
         CardResponseDto responseDto = new CardResponseDto(card);
         return new ResponseDataDto<>(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
-
     }
 
     // 카드 전체 조회 (deck별)
@@ -50,9 +48,9 @@ public class CardService {
     }
 
     // 특정 카드 조회
-    public ResponseDataDto<GetCardResponseDto> getCard(Long cardId) {
+    public ResponseDataDto<CardResponseDto> getCard(Long cardId) {
         Card card = getCardById(cardId);
-        GetCardResponseDto cardResponseDto = new GetCardResponseDto(card);
+        CardResponseDto cardResponseDto = new CardResponseDto(card);
         return new ResponseDataDto<>(ResponseStatus.CARD_READ_SUCCESS, cardResponseDto);
     }
 
@@ -62,7 +60,8 @@ public class CardService {
         List<CardResponseDto> cardResponseDataList = cardList.stream()
                 .map(CardResponseDto::new)
                 .toList();
-        return new ResponseDataDto<>(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS, cardResponseDataList);
+        return new ResponseDataDto<>(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS,
+                cardResponseDataList);
     }
 
     // 상태별 카드 조회 JpaRepository 이용하여 포지션순으로 카드 정렬
@@ -76,7 +75,8 @@ public class CardService {
 
     // 카드 수정
     @Transactional
-    public ResponseDataDto<CardResponseDto> updateCard(Long cardId, UpdateCardRequestDto requestDto) {
+    public ResponseDataDto<CardResponseDto> updateCard(Long cardId,
+            UpdateCardRequestDto requestDto) {
         Card card = getCardById(cardId);
         card.updateCard(requestDto);
         return new ResponseDataDto<>(ResponseStatus.CARD_UPDATE_SUCCESS, new CardResponseDto(card));
@@ -84,7 +84,8 @@ public class CardService {
 
     // 카드 포지션 변경
     @Transactional
-    public ResponseDataDto<CardResponseDto> updateCardPosition(Long cardId, UpdateCardPositionRequestDto requestDto) {
+    public ResponseDataDto<CardResponseDto> updateCardPosition(Long cardId,
+            UpdateCardPositionRequestDto requestDto) {
         Card card = getCardById(cardId);
         card.updatePosition(requestDto);
         CardResponseDto responseDto = new CardResponseDto(card);
@@ -98,6 +99,35 @@ public class CardService {
         return new ResponseMessageDto(ResponseStatus.CARD_DELETE_SUCCESS);
     }
 
+    // 카드 멤버 초대
+    public ResponseMessageDto inviteCardMember(Long cardId, CardMemberRequestDto requestDto) {
+        Card card = getCardById(cardId);
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_USER));
+        addCardMember(card, user);
+        return new ResponseMessageDto(ResponseStatus.CARD_INVITE_MEMBER_SUCCESS);
+    }
+
+    // 카드 멤버 전체 조회
+    public ResponseDataDto getCardMembers(Long cardId) {
+        List<CardMember> cardMemberList = cardMemberRepository.findAllByCardId(cardId);
+        List<CardMemberResponseDto> cardMemberResponseDtoList = cardMemberList.stream()
+                .map(CardMemberResponseDto::new).toList();
+        return new ResponseDataDto(ResponseStatus.CARD_MEMBER_READS_SUCCESS,
+                cardMemberResponseDtoList);
+    }
+
+    // 카드 멤버 삭제
+    @Transactional
+    public ResponseMessageDto deleteCardMember(Long cardId, Long cardMemberId) {
+        CardMember cardMember = cardMemberRepository.findById(cardMemberId)
+                .orElseThrow(()-> new CustomException(ErrorType.NOT_FOUND_CARDMEMBER));
+        if(cardId != cardMember.getCard().getId()) {
+            throw new CustomException(ErrorType.NOT_FOUND_CARDMEMBER_IN_CARD);
+        }
+        cardMemberRepository.deleteById(cardMemberId);
+        return new ResponseMessageDto(ResponseStatus.CARD_MEMBER_DELETE_SUCCESS);
+    }
 
     // 메소드
     private Deck getDeck(Long deckId) {

@@ -55,6 +55,11 @@ public enum ResponseStatus {
     CARDDETAIL_READ_SUCCESS(HttpStatus.OK, "카드 상세 조회에 성공하였습니다."),
     CARDDETAIL_UPDATE_SUCCESS(HttpStatus.OK, "카드 상세 수정에 성공하였습니다."),
     CARDDETAIL_DELETE_SUCCESS(HttpStatus.OK, "카드 상세 삭제에 성공하였습니다."),
+
+    // 카드 멤버
+    CARD_INVITE_MEMBER_SUCCESS(HttpStatus.OK, "카드에 사용자 초대가 완료되었습니다."),
+    CARD_MEMBER_READS_SUCCESS(HttpStatus.OK, "전체 카드 멤버 조회에 성공하였습니다."),
+    CARD_MEMBER_DELETE_SUCCESS(HttpStatus.OK, "카드 멤버 삭제에 성공하였습니다.")
     ;
 
     private final HttpStatus httpStatus;
