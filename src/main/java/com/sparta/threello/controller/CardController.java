@@ -1,8 +1,13 @@
 package com.sparta.threello.controller;
 
 
-import com.sparta.threello.dto.*;
-import com.sparta.threello.entity.Card;
+import com.sparta.threello.dto.CardMemberRequestDto;
+import com.sparta.threello.dto.CreateCardRequestDto;
+import com.sparta.threello.dto.GetStatusCardRequestDto;
+import com.sparta.threello.dto.ResponseDataDto;
+import com.sparta.threello.dto.ResponseMessageDto;
+import com.sparta.threello.dto.UpdateCardPositionRequestDto;
+import com.sparta.threello.dto.UpdateCardRequestDto;
 import com.sparta.threello.entity.User;
 import com.sparta.threello.repository.cardRepository.CardRepository;
 import com.sparta.threello.security.UserDetailsImpl;
@@ -13,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,8 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.sparta.threello.entity.QUser.user;
 
 @Slf4j
 @RestController
@@ -40,7 +42,7 @@ public class CardController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CreateCardRequestDto requestDto) {
         User user = userDetails.getUser();
-        ResponseDataDto responseDto =cardService.createCard(deckId, requestDto,user);
+        ResponseDataDto responseDto = cardService.createCard(deckId, requestDto, user);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseDto);
     }
@@ -91,4 +93,24 @@ public class CardController {
         return ResponseEntity.ok(cardService.deleteCard(cardId));
     }
 
+
+    //카드 멤버 초대
+    @PostMapping("/cards/{cardId}/cardDetails/invite")
+    public ResponseEntity<ResponseMessageDto> inviteCardMember(@PathVariable Long cardId,
+            @RequestBody CardMemberRequestDto requestDto) {
+        return ResponseEntity.ok(cardService.inviteCardMember(cardId,requestDto));
+    }
+
+    //카드 멤버 전체 조회
+    @GetMapping("/cards/{cardId}/cardDetails/cardMembers")
+    public ResponseEntity<ResponseDataDto> getCardMembers(@PathVariable Long cardId) {
+        return ResponseEntity.ok(cardService.getCardMembers(cardId));
+    }
+
+    //카드 멤버 삭제
+    @DeleteMapping("/cards/{cardId}/cardDetails/cardMembers/{cardMemberId}")
+    public ResponseEntity<ResponseMessageDto> deleteCardMember(@PathVariable Long cardId,
+            @PathVariable Long cardMemberId) {
+        return ResponseEntity.ok(cardService.deleteCardMember(cardId,cardMemberId));
+    }
 }

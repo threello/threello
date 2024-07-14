@@ -25,7 +25,7 @@ refreshToken: {{refreshToken}}
 
 
 ###카드 생성
-@deckId=2
+@deckId=1
 POST http://localhost:8080/decks/{{deckId}}/cards
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -51,7 +51,7 @@ refreshToken: {{refreshToken}}
 
 
 ###특정 카드 조회
-@cardId=20
+@cardId=3
 GET http://localhost:8080/cards/{{cardId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -75,3 +75,64 @@ refreshToken: {{refreshToken}}
    "cardStatus":"COMPLETED"
 }
 
+
+###댓글 생성
+POST http://localhost:8080/cards/{{cardId}}/cardDetails/comments
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "description": "comment"
+}
+
+
+###댓글 전체 조회
+GET http://localhost:8080/cards/{{cardId}}/cardDetails/comments
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+
+###댓글 수정
+@commentId=3
+PUT http://localhost:8080/cards/{{cardId}}/cardDetails/comments/{{commentId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "description" : "comment2"
+}
+
+###댓글 삭제
+DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/comments/{{commentId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+###카드 멤버 초대
+POST http://localhost:8080/cards/{{cardId}}/cardDetails/invite
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "email": "manager2@naver.com"
+}
+
+###카드 멤버 전체 조회
+GET http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+###카드 멤버 삭제
+@cardMemberId=11
+DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers/{{cardMemberId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
