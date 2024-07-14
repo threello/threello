@@ -1,12 +1,6 @@
 package com.sparta.threello.service;
 
-import com.sparta.threello.dto.CardResponseDto;
-import com.sparta.threello.dto.CreateCardRequestDto;
-import com.sparta.threello.dto.GetStatusCardRequestDto;
-import com.sparta.threello.dto.ResponseDataDto;
-import com.sparta.threello.dto.ResponseMessageDto;
-import com.sparta.threello.dto.UpdateCardPositionRequestDto;
-import com.sparta.threello.dto.UpdateCardRequestDto;
+import com.sparta.threello.dto.*;
 import com.sparta.threello.entity.*;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.ResponseStatus;
@@ -34,6 +28,7 @@ public class CardService {
     //카드 생성
     @Transactional
     public ResponseDataDto<CardResponseDto> createCard(Long deckId, CreateCardRequestDto requestDto, User user) {
+
         Deck deck = getDeck(deckId);
 
         Card card = saveCard(requestDto, deck);
@@ -42,6 +37,7 @@ public class CardService {
 
         CardResponseDto responseDto = new CardResponseDto(card);
         return new ResponseDataDto<>(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
+
     }
 
     // 카드 전체 조회 (deck별)
@@ -54,9 +50,9 @@ public class CardService {
     }
 
     // 특정 카드 조회
-    public ResponseDataDto<CardResponseDto> getCard(Long cardId) {
+    public ResponseDataDto<GetCardResponseDto> getCard(Long cardId) {
         Card card = getCardById(cardId);
-        CardResponseDto cardResponseDto = new CardResponseDto(card);
+        GetCardResponseDto cardResponseDto = new GetCardResponseDto(card);
         return new ResponseDataDto<>(ResponseStatus.CARD_READ_SUCCESS, cardResponseDto);
     }
 
@@ -70,10 +66,10 @@ public class CardService {
     }
 
     // 상태별 카드 조회 JpaRepository 이용하여 포지션순으로 카드 정렬
-    public ResponseDataDto<List<CardResponseDto>> getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
+    public ResponseDataDto<List<CardPerStatusResponseDto>> getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
         List<Card> cardList = cardRepository.findAllByCardStatusAndDeckIdOrderByPositionAsc(requestDto.getCardStatus(), deckId);
-        List<CardResponseDto> cardResponseDataList = cardList.stream()
-                .map(CardResponseDto::new)
+        List<CardPerStatusResponseDto> cardResponseDataList = cardList.stream()
+                .map(CardPerStatusResponseDto::new)
                 .toList();
         return new ResponseDataDto<>(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardResponseDataList);
     }

@@ -34,7 +34,7 @@ public class Card extends Timestamped {
 
     //deck 의 title 값이 들어가야함
     @Column(name = "card_deck_position", nullable = false)
-    private String cardDeckPosition;
+    private String deckTitle;
 
     //마감일자
     @Column
@@ -57,7 +57,7 @@ public class Card extends Timestamped {
         this.title = requestDto.getTitle();
         this.position = requestDto.getPosition();
         this.cardStatus = requestDto.getCardStatus();
-        this.cardDeckPosition = deck.getTitle();
+        this.deckTitle = deck.getTitle();
         this.dueAt = requestDto.getDueAt();
         this.deck = deck;
     }
@@ -66,7 +66,7 @@ public class Card extends Timestamped {
 //        this.title = title;
 //        this.position = position;
 //        this.cardStatus = cardStatus;
-//        this.cardDeckPosition = deck.getTitle();
+//        this.deckTitle = deck.getTitle();
 //        this.deck = deck;
 //    }
 
@@ -78,7 +78,7 @@ public class Card extends Timestamped {
     }
 
     public void updatePosition(UpdateCardPositionRequestDto requestDto) {
-        this.cardDeckPosition = requestDto.getCardDeckPosition();
+        this.deckTitle = requestDto.getDeckTitle();
         this.position = requestDto.getPosition();
     }
 

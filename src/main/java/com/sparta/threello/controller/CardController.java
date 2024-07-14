@@ -57,7 +57,7 @@ public class CardController {
         return ResponseEntity.ok(cardService.getCard(cardId));
     }
 
-    //작업자별 카드 조회
+    //작업자별 카드 조회(덱별)
     @GetMapping("/decks/{deckId}/cards/{userId}")
     public ResponseEntity<ResponseDataDto> getUserCards(@PathVariable Long deckId,
             @PathVariable Long userId) {

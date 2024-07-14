@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class UpdateCardPositionRequestDto {
-    private String cardDeckPosition;
+    private String deckTitle;
     private Long position;
 }
