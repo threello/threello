@@ -53,6 +53,17 @@ public class BoardController {
     }
 
     /**
+     * [getBoard] 특정 보드 조회하기
+     * @param userDetails 회원 정보
+     * @return status.code, message, responseDto
+     **/
+    @PutMapping("/{boardId}")
+    public ResponseEntity<ResponseDataDto<BoardResponseDto>> getBoard(@Valid @RequestBody BoardRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        BoardResponseDto responseDto = boardService.getBoard(boardId, userDetails.getUser());
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_READ_SUCCESS, responseDto));
+    }
+
+    /**
      * [updateBoard] 보드 수정하기
      * @param userDetails 회원 정보
      * @return status.code, message, responseDto

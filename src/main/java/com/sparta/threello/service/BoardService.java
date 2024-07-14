@@ -98,6 +98,24 @@ public class BoardService {
         return boardMemberList;
     }
 
+    /**
+     * [getBoard] 특정보드 찾기
+     * @param boardId 보드 아이디
+     * @param loginUser 로그인한 회원 정보
+     * @return BoardResponseDto
+     **/
+    public BoardResponseDto getBoard(Long boardId, User loginUser) {
+        // [예외 1] - 초대되지 않은 유저는 보드를 볼 수 없음
+        if (boardMemberRepository.findByBoardIdAndUserId(boardId, loginUser.getId()).isEmpty()) {
+            throw new CustomException(ErrorType.NOT_AVAILABLE_PERMISSION);
+        }
+
+        // [예외 1] - 존재하는 board인지 확인
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_BOARD));
+
+        return new BoardResponseDto(board);
+    }
+
 
     /**
      * [updateBoard] 보드 수정하기
@@ -169,12 +187,11 @@ public class BoardService {
     }
 
 
-
     //매니저 권한이 아니면 예외처리
+
     public void checkManagerPermission(User loginUser) {
         if (loginUser.getUserType().equals(UserType.USER)) {
             throw new CustomException(ErrorType.NOT_AVAILABLE_PERMISSION);
         }
     }
-
 }
