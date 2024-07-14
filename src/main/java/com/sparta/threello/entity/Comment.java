@@ -26,4 +26,14 @@ public class Comment extends Timestamped{
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
+
+    public Comment(String description, User user, Card card) {
+        this.description = description;
+        this.user = user;
+        this.card = card;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 }

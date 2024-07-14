@@ -1,12 +1,9 @@
 package com.sparta.threello.enums;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public enum CardStatus {
-    PROCESSING("PROCESSING"),
-    COMPLETED("COMPLETED");
+    PROCESSING, COMPLETED;
 
-    private final String status;
-
-    CardStatus(String status) {
-        this.status = status;
-    }
 }

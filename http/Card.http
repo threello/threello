@@ -1,0 +1,77 @@
+### 보드생성
+POST http://localhost:8080/boards
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "title": "todo",
+  "description": "안녕하세유"
+}
+
+
+### boardId 설정
+@boardId = 1
+### 덱 생성
+POST http://localhost:8080/boards/{{boardId}}/decks
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "title": "todo2",
+  "position": 2
+}
+
+
+###카드 생성
+@deckId=2
+POST http://localhost:8080/decks/{{deckId}}/cards
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+  "title" : "process",
+  "cardStatus": "COMPLETED",
+  "position" : 6,
+  "description": "fd",
+  "emailOfCardManager": "manager2@naver.com",
+  "dueAt": "2024-12-01"
+
+
+}
+
+
+###카드 전체 조회(덱별 카드조회)
+GET http://localhost:8080/decks/{{deckId}}/cards
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+###특정 카드 조회
+@cardId=20
+GET http://localhost:8080/cards/{{cardId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+
+###작업자별 카드 조회
+@userId=1
+GET http://localhost:8080/decks/{{deckId}}/cards/{{userId}}
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+###상태별 카드 조회
+GET http://localhost:8080/decks/{{deckId}}/cards/status
+Content-Type: application/json
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+{
+   "cardStatus":"COMPLETED"
+}
+

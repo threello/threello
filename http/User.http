@@ -1,0 +1,53 @@
+### 회원가입 (MANAGER)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "manager2@naver.com",
+  "password": "Managerr0!",
+  "name" : "김예현",
+  "userType" : "MANAGER"
+}
+
+### 회원가입 (USER)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "email": "user@naver.com",
+  "password": "Usertest0!",
+  "name" : "김우진",
+  "userType" : "USER"
+}
+
+
+### 로그인 (MANAGER)
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "manager2@naver.com",
+  "password": "Managerr0!"
+}
+
+> {%
+    client.log(response.headers.valueOf("accessToken"));
+    client.log(response.headers.valueOf("refreshToken"));
+    client.global.set("accessToken", response.headers.valueOf("accessToken"));
+    client.global.set("refreshToken", response.headers.valueOf("refreshToken"));
+%}
+
+
+
+### 로그아웃 (MANAGER)
+POST http://localhost:8080/users/logout
+accessToken: {{accessToken}}
+refreshToken: {{refreshToken}}
+
+> {%
+    client.global.clear("accessToken");
+    client.global.clear("refreshToken");
+%}
+
+
+
