@@ -44,26 +44,27 @@ public class CommentService {
         return new ResponseDataDto(ResponseStatus.COMMENTS_READ_SUCCESS, commentResponseDtoList);
     }
 
-    //특정 댓글 조회
-    public ResponseDataDto getComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_COMMENT));
-        CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-        return new ResponseDataDto(ResponseStatus.COMMENT_READ_SUCCESS, commentResponseDto);
-    }
-
     //댓글 수정
     @Transactional
-    public ResponseDataDto updateComment(Long commentId, CommentRequestDto requestDto) {
+    public ResponseDataDto updateComment(Long cardId, Long commentId, CommentRequestDto requestDto) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_COMMENT));
+        if(cardId != comment.getCard().getId()) {
+            throw new CustomException(ErrorType.NOT_FOUND_COMMENT_IN_CARD);
+        }
         comment.updateDescription(requestDto.getDescription());
         CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
         return new ResponseDataDto(ResponseStatus.COMMENT_UPDATE_SUCCESS, commentResponseDto);
     }
 
     //댓글 삭제
-    public ResponseMessageDto deleteComment(Long commentId) {
+    @Transactional
+    public ResponseMessageDto deleteComment(Long cardId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_COMMENT));
+        if(cardId != comment.getCard().getId()) {
+            throw new CustomException(ErrorType.NOT_FOUND_COMMENT_IN_CARD);
+        }
         commentRepository.deleteById(commentId);
         return new ResponseMessageDto(ResponseStatus.COMMENT_DELETE_SUCCESS);
     }

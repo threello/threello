@@ -30,6 +30,7 @@ public enum ErrorType {
     NOT_FOUND_CARDDETAIL(HttpStatus.NOT_FOUND, "존재하지 않는 카드 상세입니다."),
     // comment
     NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "존재하지 않는 댓글입니다."),
+    NOT_FOUND_COMMENT_IN_CARD(HttpStatus.NOT_FOUND, "해당 카드 안에 해당 댓글이 없습니다."),
 
     // JWT
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다. 다시 로그인 해주세요."),
