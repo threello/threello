@@ -5,12 +5,12 @@ import lombok.Getter;
 
 @Getter
 public class ResponseDataDto<T> {
-    private int status;
+    private ResponseStatus status;
     private String message;
     private T data;
 
     public ResponseDataDto(ResponseStatus responseStatus, T data) {
-        this.status = responseStatus.getHttpStatus().value();
+        this.status = responseStatus;
         this.message = responseStatus.getMessage();
         this.data = data;
     }
