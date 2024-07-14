@@ -13,6 +13,7 @@ import lombok.Getter;
 
 @Getter
 public class CardResponseDto {
+    private Long id;
 
     private Long deckId;
 
@@ -27,6 +28,7 @@ public class CardResponseDto {
 
 
     public CardResponseDto(Card card) {
+        this.id = card.getId();
         this.deckId = card.getDeck().getId();
         this.cardStatus = card.getCardStatus();
         this.title = card.getTitle();
