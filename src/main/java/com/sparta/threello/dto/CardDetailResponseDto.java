@@ -5,6 +5,7 @@ import com.sparta.threello.entity.CardDetail;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
+@Getter
 public class CardDetailResponseDto {
     private Long id;
     private Long cardId;
