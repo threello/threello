@@ -73,16 +73,16 @@ refreshToken: {{refreshToken}}
    "cardStatus":"COMPLETED"
 }
 ###카드수정
-PATCH http://localhost:8080/decks/{{deckId}}/cards
+PATCH http://localhost:8080/cards/{{cardId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
 
-  "title" : "process",
-  "cardStatus": "PROCESSING",
-  "dueAt": "2024-12-01"
+  "title" : "수정한 타이틀2",
+  "cardStatus": "COMPLETED",
+  "dueAt": "2024-12-31"
 
 }
 ###카드 포지션 변경

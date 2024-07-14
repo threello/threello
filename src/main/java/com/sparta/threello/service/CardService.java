@@ -76,7 +76,7 @@ public class CardService {
     // 카드 수정
     @Transactional
     public ResponseDataDto<CardResponseDto> updateCard(Long cardId,
-            UpdateCardRequestDto requestDto) {
+                                                       UpdateCardRequestDto requestDto) {
         Card card = getCardById(cardId);
         card.updateCard(requestDto);
         return new ResponseDataDto<>(ResponseStatus.CARD_UPDATE_SUCCESS, new CardResponseDto(card));
@@ -88,9 +88,7 @@ public class CardService {
             UpdateCardPositionRequestDto requestDto) {
         Card card = getCardById(cardId);
 
-        if (deckId != card.getDeck().getId()) {
-           throw new CustomException(ErrorType.NOT_FOUND_CARD_IN_THE_DECK);
-        }
+        verify(deckId,card);
 
         Deck deck = getDeck(requestDto.getDeckId());
         Long position=requestDto.getPosition();
@@ -161,5 +159,12 @@ public class CardService {
     private void saveCardDetail(Card card) {
         CardDetail cardDetail = new CardDetail(card);
         cardDetailRepository.save(cardDetail);
+    }
+
+    /*검증메서드*/
+    private void verify(Long deckId, Card card) throws CustomException{
+        if (deckId != card.getDeck().getId()) {
+            throw new CustomException(ErrorType.NOT_FOUND_CARD_IN_THE_DECK);
+        }
     }
 }
