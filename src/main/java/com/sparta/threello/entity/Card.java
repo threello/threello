@@ -1,7 +1,6 @@
 package com.sparta.threello.entity;
 
 import com.sparta.threello.dto.CreateCardRequestDto;
-import com.sparta.threello.dto.UpdateCardPositionRequestDto;
 import com.sparta.threello.dto.UpdateCardRequestDto;
 import com.sparta.threello.enums.CardStatus;
 import jakarta.persistence.*;
@@ -74,14 +73,13 @@ public class Card extends Timestamped {
         this.title = requestDto.getTitle();
         this.cardStatus = requestDto.getCardStatus();
         this.dueAt = requestDto.getDueAt();
-        this.position=requestDto.getPosition();
     }
 
-    public void updatePosition(UpdateCardPositionRequestDto requestDto) {
-        this.deckTitle = requestDto.getDeckTitle();
-        this.position = requestDto.getPosition();
-    }
+    public void updatePosition(Deck deck, Long position) {
+        setDeck(deck);
+        this.position = position;
 
+    }
 
     /*
      * 연관관계 편의 메서드
@@ -89,4 +87,12 @@ public class Card extends Timestamped {
     public void setCardDetail(CardDetail cardDetail) {
         this.cardDetail = cardDetail;
     }
+
+    public void setDeck(Deck deck) {
+        this.deck = deck;
+        deck.getCardList().add(this);
+        this.deckTitle = this.deck.getTitle();
+    }
+
+
 }

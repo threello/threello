@@ -11,12 +11,8 @@ import java.time.LocalDate;
 @Getter
 public class UpdateCardRequestDto {
 
-    private Long deckId;
-
     @NotBlank(message="제목 입력은 필수입니다.")
     private String title;
-
-    private Long position;
 
     private CardStatus cardStatus;
 

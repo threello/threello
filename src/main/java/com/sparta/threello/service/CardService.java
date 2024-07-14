@@ -84,11 +84,19 @@ public class CardService {
 
     // 카드 포지션 변경
     @Transactional
-    public ResponseDataDto<CardResponseDto> updateCardPosition(Long cardId,
+    public ResponseDataDto<UpdateCardPositionResponseDto> updateCardPosition(Long deckId,Long cardId,
             UpdateCardPositionRequestDto requestDto) {
         Card card = getCardById(cardId);
-        card.updatePosition(requestDto);
-        CardResponseDto responseDto = new CardResponseDto(card);
+
+        if (deckId != card.getDeck().getId()) {
+           throw new CustomException(ErrorType.NOT_FOUND_CARD_IN_THE_DECK);
+        }
+
+        Deck deck = getDeck(requestDto.getDeckId());
+        Long position=requestDto.getPosition();
+        card.updatePosition(deck,position);
+
+        UpdateCardPositionResponseDto responseDto = new UpdateCardPositionResponseDto(card);
         return new ResponseDataDto<>(ResponseStatus.CARD_POSITION_UPDATE_SUCCESS, responseDto);
     }
 
