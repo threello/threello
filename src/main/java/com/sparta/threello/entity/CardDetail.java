@@ -28,8 +28,7 @@ public class CardDetail extends Timestamped {
 
 
     /*연관관계 편의 메서드*/
-    public CardDetail(CreateCardRequestDto requestDto, Card card) {
-        this.description=requestDto.getDescription();
+    public CardDetail(Card card) {
         this.card=card;
         card.setCardDetail(this);
     }

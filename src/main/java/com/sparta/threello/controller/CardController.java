@@ -3,6 +3,7 @@ package com.sparta.threello.controller;
 
 import com.sparta.threello.dto.*;
 import com.sparta.threello.entity.Card;
+import com.sparta.threello.entity.User;
 import com.sparta.threello.repository.cardRepository.CardRepository;
 import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.CardService;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.sparta.threello.entity.QUser.user;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -32,8 +36,11 @@ public class CardController {
     //카드 생성
     @PostMapping("/decks/{deckId}/cards")
     public ResponseEntity<ResponseDataDto> createCard(
-            @PathVariable Long deckId, @Valid @RequestBody CreateCardRequestDto requestDto) {
-        ResponseDataDto responseDto =cardService.createCard(deckId, requestDto);
+            @PathVariable Long deckId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody CreateCardRequestDto requestDto) {
+        User user = userDetails.getUser();
+        ResponseDataDto responseDto =cardService.createCard(deckId, requestDto,user);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseDto);
     }

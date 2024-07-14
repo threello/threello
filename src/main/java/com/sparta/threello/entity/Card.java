@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,11 +55,11 @@ public class Card extends Timestamped {
     public Card(CreateCardRequestDto requestDto, Deck deck) {
 
         this.title = requestDto.getTitle();
-        this.deck = deck;
-        this.cardStatus = requestDto.getCardStatus();
         this.position = requestDto.getPosition();
+        this.cardStatus = requestDto.getCardStatus();
         this.cardDeckPosition = deck.getTitle();
         this.dueAt = requestDto.getDueAt();
+        this.deck = deck;
     }
 
 //    public Card(String title, Long position, CardStatus cardStatus, Deck deck) {
@@ -71,9 +70,11 @@ public class Card extends Timestamped {
 //        this.deck = deck;
 //    }
 
-    public void update(UpdateCardRequestDto requestDto) {
+    public void updateCard(UpdateCardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.cardStatus = requestDto.getCardStatus();
+        this.dueAt = requestDto.getDueAt();
+        this.position=requestDto.getPosition();
     }
 
     public void updatePosition(UpdateCardPositionRequestDto requestDto) {

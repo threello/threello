@@ -36,31 +36,24 @@ public class CardService {
     //카드 생성
     @Transactional
     public ResponseDataDto createCard(Long deckId,
-                                      CreateCardRequestDto requestDto) {
+                                      CreateCardRequestDto requestDto, User user) {
         //덱 조회
         Deck deck = deckRepository.findById(deckId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_DECK));
 
-
         //카드 저장
         Card card = new Card(requestDto, deck);
         cardRepository.save(card);
-        cardRepository.flush();
 
-
-        // 작업관리자 설정
-        if (requestDto.getEmailOfCardManager()!=null) {
-            User cardManager = userRepository.findByEmail(requestDto.getEmailOfCardManager())
-                    .orElseThrow(()->new CustomException(ErrorType.NOT_FOUND_USER));
-            CardMember cardMember = new CardMember(card,cardManager);
-            cardMemberRepository.save(cardMember);
-        }
+        //카드멤버 추가
+        CardMember cardMember = new CardMember(card,user);
+        cardMemberRepository.save(cardMember);
 
         //카드 응답 DTO 생성
         CardResponseDto responseDto = new CardResponseDto(card);
 
         //카드 디테일 저장
-        CardDetail cardDetail = new CardDetail(requestDto, card);
+        CardDetail cardDetail = new CardDetail(card);
         cardDetailRepository.save(cardDetail);
 
         return new ResponseDataDto(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
@@ -72,7 +65,7 @@ public class CardService {
     public ResponseDataDto getCards(Long deckId) {
 
         List<Card> cardList = cardRepository.findAllByDeckIdOrderByPositionAsc(deckId);// position별로 오름차순 정렬
-        List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
+        List<CardResponseDto> cardResponseDataList = cardList.stream().map(card -> new CardResponseDto(card)).toList();
         return new ResponseDataDto(ResponseStatus.CARDS_READ_SUCCESS, cardResponseDataList);
     }
 
@@ -86,14 +79,14 @@ public class CardService {
     //작업자별 카드 조회(덱별로) QueryDsl 이용하여 포지션순으로 카드 정렬
     public ResponseDataDto getUserCards(Long deckId, Long userId) {
         List<Card> cardList = cardRepository.findAllByDeckIdAndUserId(deckId, userId);
-        List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
+        List<CardResponseDto> cardResponseDataList = cardList.stream().map(card -> new CardResponseDto(card)).toList();
         return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS, cardResponseDataList);
     }
 
     //상태별 카드 조회 JpaRepository 이용하여 포지션순으로 카드 정렬
     public ResponseDataDto getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
         List<Card> cardList = cardRepository.findAllByCardStatusAndDeckIdOrderByPositionAsc(requestDto.getCardStatus(),deckId);
-        List<CardResponseDto> cardResponseDataList = cardList.stream().map(CardResponseDto::new).toList();
+        List<CardResponseDto> cardResponseDataList = cardList.stream().map(card -> new CardResponseDto(card)).toList();
         return new ResponseDataDto(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardResponseDataList);
     }
 
@@ -102,7 +95,7 @@ public class CardService {
     public ResponseDataDto updateCard(Long cardId, UpdateCardRequestDto RequestDto) {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARD));
-        card.update(RequestDto);
+        card.updateCard(RequestDto);
         return new ResponseDataDto(ResponseStatus.CARD_UPDATE_SUCCESS, card);
     }
 
