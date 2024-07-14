@@ -3,10 +3,11 @@ package com.sparta.threello.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sparta.threello.entity.Card;
 import com.sparta.threello.enums.CardStatus;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
-
+@Getter
 public class GetCardResponseDto {
 
     private Long deckId;
