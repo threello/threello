@@ -15,16 +15,13 @@ import org.springframework.validation.annotation.Validated;
 
 @Getter
 public class CreateCardRequestDto {
+
     @NotBlank(message="제목 입력은 필수입니다.")
     private String title;
 
     private Long position;
 
     private CardStatus cardStatus;
-
-    private String description;
-
-    private String emailOfCardManager;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueAt;
