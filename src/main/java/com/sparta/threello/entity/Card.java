@@ -55,7 +55,7 @@ public class Card extends Timestamped {
 
         this.title = requestDto.getTitle();
         this.position = requestDto.getPosition();
-        this.cardStatus = requestDto.getCardStatus();
+        this.cardStatus = CardStatus.PROCESSING;
         this.deckTitle = deck.getTitle();
         this.dueAt = requestDto.getDueAt();
         this.deck = deck;

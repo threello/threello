@@ -21,8 +21,6 @@ public class CreateCardRequestDto {
 
     private Long position;
 
-    private CardStatus cardStatus;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueAt;
 
