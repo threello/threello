@@ -41,7 +41,7 @@ refreshToken: {{refreshToken}}
 
 
 ###카드 전체 조회(덱별 카드조회)
-@deckId=1
+#@deckId=1
 GET http://localhost:8080/decks/{{deckId}}/cards
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -57,7 +57,7 @@ refreshToken: {{refreshToken}}
 
 
 ###작업자별 카드 조회
-@userId=1
+#@userId=1
 GET http://localhost:8080/decks/{{deckId}}/cards/{{userId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -146,6 +146,7 @@ refreshToken: {{refreshToken}}
 
 
 ###카드 멤버 초대
+@cardId=10
 POST http://localhost:8080/cards/{{cardId}}/cardDetails/invite
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -163,8 +164,8 @@ refreshToken: {{refreshToken}}
 
 
 ###카드 멤버 삭제
-@cardMemberId=3
-@cardId=3
+#@cardMemberId=3
+#@cardId=3
 DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers/{{cardMemberId}}
 Content-Type: application/json
 accessToken: {{accessToken}}

@@ -107,11 +107,19 @@ public class CardService {
     // 카드 멤버 초대
     public ResponseMessageDto inviteCardMember(Long cardId, CardMemberRequestDto requestDto) {
         Card card = getCardById(cardId);
-        User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_USER));
+        String email = requestDto.getEmail();
+        User user = findUserByEmail(email);
+
+        //이미 초대된 사용자인지 확인
+        Boolean isAlreadyInvited =cardMemberRepository.existsCardMemberByCardIdAndUserId(cardId,user.getId());
+        if (isAlreadyInvited) {
+            throw new CustomException(ErrorType.ALREADY_INVITED_USER);
+        }
+
         addCardMember(card, user);
         return new ResponseMessageDto(ResponseStatus.CARD_INVITE_MEMBER_SUCCESS);
     }
+
 
     // 카드 멤버 전체 조회
     public ResponseDataDto getCardMembers(Long cardId) {
@@ -158,6 +166,11 @@ public class CardService {
     private void saveCardDetail(Card card) {
         CardDetail cardDetail = new CardDetail(card);
         cardDetailRepository.save(cardDetail);
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_USER));
     }
 
     /*검증메서드*/
