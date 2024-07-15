@@ -21,11 +21,13 @@ public class BoardController {
     /**
      * [createBoard] 보드 생성
      * @param requestDto 요청 객체
-     * @param userDetails 회원 정보
+     * @param userDetails 회원 정보xDSA
      * @return status.code, message, responseDto
      **/
     @PostMapping
-    public ResponseEntity<ResponseDataDto<BoardResponseDto>> createBoard(@Valid @RequestBody BoardRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseDataDto<BoardResponseDto>> createBoard(
+            @Valid @RequestBody BoardRequestDto requestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResponseDto responseDto = boardService.createBoard(requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_CREATE_SUCCESS, responseDto));
     }
@@ -36,7 +38,8 @@ public class BoardController {
      * @return status.code, message, responseDto
      **/
     @GetMapping("/owner")
-    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getOwnerBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getOwnerBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<BoardResponseDto> responseDtoList = boardService.getOwnerBoards(userDetails.getUser());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
     }
@@ -47,7 +50,8 @@ public class BoardController {
      * @return status.code, message, responseDto
      **/
     @GetMapping("/member")
-    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getMemberBoards(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseDataDto<List<BoardResponseDto>>> getMemberBoards(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         List<BoardResponseDto> responseDtoList = boardService.getMemberBoards(userDetails.getUser());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARDS_READ_SUCCESS, responseDtoList));
     }
@@ -58,7 +62,9 @@ public class BoardController {
      * @return status.code, message, responseDto
      **/
     @GetMapping("/{boardId}")
-    public ResponseEntity<ResponseDataDto<BoardResponseDto>> getBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseDataDto<BoardResponseDto>> getBoard(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResponseDto responseDto = boardService.getBoard(boardId, userDetails.getUser());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_READ_SUCCESS, responseDto));
     }
@@ -69,7 +75,10 @@ public class BoardController {
      * @return status.code, message, responseDto
      **/
     @PutMapping("/{boardId}")
-    public ResponseEntity<ResponseDataDto<BoardResponseDto>> updateBoard(@Valid @RequestBody BoardRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseDataDto<BoardResponseDto>> updateBoard(
+            @Valid @RequestBody BoardRequestDto requestDto,
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         BoardResponseDto responseDto = boardService.updateBoard(boardId, requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_UPDATE_SUCCESS, responseDto));
     }
@@ -81,7 +90,9 @@ public class BoardController {
      * @return status.code, message
      **/
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<ResponseMessageDto> deleteBoard(@PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseMessageDto> deleteBoard(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardService.deleteBoard(boardId, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_DELETE_SUCCESS));
     }
@@ -93,7 +104,10 @@ public class BoardController {
      * @return status.code, message
      **/
     @PostMapping("/{boardId}/invite")
-    public ResponseEntity<ResponseMessageDto> inviteBoardMember(@Valid @RequestBody InviteRequestDto requestDto, @PathVariable Long boardId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseMessageDto> inviteBoardMember(
+            @Valid @RequestBody InviteRequestDto requestDto,
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
         boardService.inviteBoardMember(boardId, requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_INVITE_MEMBER_SUCCESS));
     }

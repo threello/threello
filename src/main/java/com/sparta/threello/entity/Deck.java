@@ -11,7 +11,7 @@ import java.util.Optional;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "deck")
+@Table(name = "deck", indexes = @Index(name = "idx_title", columnList = "title"))
 public class Deck extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
