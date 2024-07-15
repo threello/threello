@@ -80,21 +80,21 @@ refreshToken: {{refreshToken}}
 
 {
 
-  "title" : "수정한 타이틀3",
-  "cardStatus": "PROCESSING",
-  "dueAt": "2024-12-30"
+  "title" : "수정한 타이틀2",
+  "cardStatus": "COMPLETED",
+  "dueAt": "2024-12-31"
 
 }
 ###카드 포지션 변경
-@cardId=7
+#@cardId=7
 PATCH http://localhost:8080/decks/{{deckId}}/cards/{{cardId}}
 Content-Type: application/json
 accessToken:{{accessToken}}
 refreshToken:{{refreshToken}}
 
 {
-  "deckId" : 2,
-  "position": 3
+  "deckId" : 1,
+  "position": 6
 }
 
 
@@ -163,7 +163,8 @@ refreshToken: {{refreshToken}}
 
 
 ###카드 멤버 삭제
-@cardMemberId=2
+@cardMemberId=3
+@cardId=3
 DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers/{{cardMemberId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
