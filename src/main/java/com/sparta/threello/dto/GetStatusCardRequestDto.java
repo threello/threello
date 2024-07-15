@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class GetStatusCardRequestDto {
-    private  CardStatus cardStatus;
 
+    private  CardStatus cardStatus;
 
 }
