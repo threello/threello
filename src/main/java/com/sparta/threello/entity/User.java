@@ -45,7 +45,7 @@ public class User extends Timestamped{
     private UserType userType;
 
     //BoardMember 과 조인
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user"/*,cascade = CascadeType.ALL, orphanRemoval = true*/)
     private List<BoardMember> boardMemberList = new ArrayList<>();
 
     //refreshToken 확인

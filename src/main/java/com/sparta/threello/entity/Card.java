@@ -32,7 +32,7 @@ public class Card extends Timestamped {
     private CardStatus cardStatus;
 
     //deck 의 title 값이 들어가야함
-    @Column(name = "card_deck_position", nullable = false)
+    @Column(name = "deck_title", nullable = false)
     private String deckTitle;
 
     //마감일자

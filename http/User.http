@@ -3,9 +3,9 @@ POST http://localhost:8080/users
 Content-Type: application/json
 
 {
-  "email": "manager2@naver.com",
-  "password": "Managerr0!",
-  "name" : "김예현",
+  "email": "hgh7546@naver.com",
+  "password": "Hgh7546!!!",
+  "name" : "한근형",
   "userType" : "MANAGER"
 }
 
@@ -26,8 +26,8 @@ POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "email": "manager2@naver.com",
-  "password": "Managerr0!"
+  "email": "hgh7546@naver.com",
+  "password": "Hgh7546!!!"
 }
 
 > {%

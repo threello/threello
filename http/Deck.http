@@ -9,12 +9,12 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title": "todo",
+  "title": "1번덱타이틀",
   "position": 1
 }
 
 
-### 덱 전체 죄회
+### 덱 전체 조회
 GET http://localhost:8080/boards/{{boardId}}/decks
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
@@ -33,7 +33,7 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title": "complete"
+  "title": "1번덱타이틀 수정"
 }
 
 
