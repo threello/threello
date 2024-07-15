@@ -69,7 +69,7 @@ public class CardController {
     //카드 수정
     @PatchMapping("/cards/{cardId}")
     public ResponseEntity<ResponseDataDto> updateCard(@PathVariable Long cardId,
-            @RequestBody UpdateCardRequestDto requestDto) {
+                                                      @RequestBody UpdateCardRequestDto requestDto) {
         return ResponseEntity.ok(cardService.updateCard(cardId, requestDto));
     }
 
