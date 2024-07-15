@@ -21,7 +21,7 @@ public enum ResponseStatus {
     BOARDS_READ_SUCCESS(HttpStatus.OK, "전체 보드 조회에 성공하였습니다."),
     BOARD_READ_SUCCESS(HttpStatus.OK, "보드 조회에 성공하였습니다."),
     BOARD_UPDATE_SUCCESS(HttpStatus.OK, "보드 수정에 성공하였습니다."),
-    BOARD_DELETE_SUCCESS(HttpStatus.OK, "보드 삭제가 삭제되었습니다."),
+    BOARD_DELETE_SUCCESS(HttpStatus.OK, "보드가 삭제되었습니다."),
     BOARD_POSITION_UPDATE_SUCCESS(HttpStatus.OK, "보드 포지션 변경에 성공하였습니다."),
     BOARD_INVITE_MEMBER_SUCCESS(HttpStatus.OK, "보드에 사용자 초대가 완료되었습니다."),
 

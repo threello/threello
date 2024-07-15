@@ -19,29 +19,29 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title": "todo2",
-  "position": 2
+  "title": "5번 덱 제목",
+  "position": 5
 }
 
 
 ###카드 생성
-#@deckId=2
+@deckId=1
 POST http://localhost:8080/decks/{{deckId}}/cards
 Content-Type: application/json
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title" : "2번덱 카드",
+  "title" : "1번덱 카드제목",
   "cardStatus": "PROCESSING",
-  "position" : 3,
-  "dueAt": "2024-12-05"
+  "position" : 1,
+  "dueAt": "2024-03-01"
 
 }
 
 
 ###카드 전체 조회(덱별 카드조회)
-@deckId=1
+#@deckId=1
 GET http://localhost:8080/decks/{{deckId}}/cards
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -70,9 +70,10 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-   "cardStatus":"COMPLETED"
+   "cardStatus":"PROCESSING"
 }
 ###카드수정
+#@cardId=1
 PATCH http://localhost:8080/cards/{{cardId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -80,7 +81,7 @@ refreshToken: {{refreshToken}}
 
 {
 
-  "title" : "수정한 타이틀2",
+  "title" : "수정한 타이틀",
   "cardStatus": "COMPLETED",
   "dueAt": "2024-12-31"
 
@@ -102,7 +103,7 @@ refreshToken:{{refreshToken}}
 
 
 ###카드 삭제
-#@cardId=8
+@cardId=1
 DELETE http://localhost:8080/cards/{{cardId}}
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
@@ -120,6 +121,7 @@ refreshToken: {{refreshToken}}
 
 
 ###댓글 전체 조회
+#@cardId=1
 GET http://localhost:8080/cards/{{cardId}}/cardDetails/comments
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -128,17 +130,18 @@ refreshToken: {{refreshToken}}
 
 
 ###댓글 수정
-@commentId=1
+#@commentId=1
 PUT http://localhost:8080/cards/{{cardId}}/cardDetails/comments/{{commentId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "description" : "comment2"
+  "description" : "comment수정"
 }
 
 ###댓글 삭제
+#@commentId=1
 DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/comments/{{commentId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
@@ -152,7 +155,7 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "email": "manager2@naver.com"
+  "email": "user@naver.com"
 }
 
 ###카드 멤버 전체 조회
@@ -163,14 +166,15 @@ refreshToken: {{refreshToken}}
 
 
 ###카드 멤버 삭제
-@cardMemberId=3
-@cardId=3
+#@cardMemberId=1
+#@cardId=1
 DELETE http://localhost:8080/cards/{{cardId}}/cardDetails/cardMembers/{{cardMemberId}}
 Content-Type: application/json
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 ###카드 상세 수정
+#@cardId=1
 PATCH http://localhost:8080/cards/{{cardId}}/cardDetails
 Content-Type: application/json
 accessToken: {{accessToken}}

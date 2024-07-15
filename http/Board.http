@@ -5,7 +5,7 @@ refreshToken: {{refreshToken}}
 Content-Type: application/json
 
 {
-  "title": "예현님의 보드입니다",
+  "title": "근형님의 2번보드",
   "description": "보드를 생성하였습니다."
 }
 
@@ -22,29 +22,29 @@ refreshToken: {{refreshToken}}
 
 
 ### 보드에 MEMBER 초대하기 (USER 1) 초대
-POST http://localhost:8080/boards/3/invite
+POST http://localhost:8080/boards/2/invite
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 Content-Type: application/json
 
 {
-  "email" : "manager1@naver.com"
+  "email" : "manager2@naver.com"
 }
 
 
 ### 보드 수정하기
-PUT http://localhost:8080/boards/1
+PUT http://localhost:8080/boards/2
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 Content-Type: application/json
 
 {
-  "title" : "수정된 title",
+  "title" : "예현님의 2번보드",
   "description": "수정된 description"
 }
 
 
 ### 보드 삭제하기
-DELETE http://localhost:8080/boards/3
+DELETE http://localhost:8080/boards/2
 accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
