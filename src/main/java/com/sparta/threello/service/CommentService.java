@@ -25,48 +25,54 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final CardRepository cardRepository;
 
-    //댓글 생성
-    public ResponseDataDto createComment(Long cardId, User user,
-            CommentRequestDto requestDto) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARD));
+    // 댓글 생성
+    public ResponseDataDto<CommentResponseDto> createComment(Long cardId, User user, CommentRequestDto requestDto) {
+        Card card = getCardById(cardId);
         Comment comment = new Comment(requestDto.getDescription(), user, card);
         commentRepository.save(comment);
-        CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-        return new ResponseDataDto(ResponseStatus.COMMENT_CREATE_SUCCESS, commentResponseDto);
+        return new ResponseDataDto<>(ResponseStatus.COMMENT_CREATE_SUCCESS, new CommentResponseDto(comment));
     }
 
-    //전체 댓글 조회
-    public ResponseDataDto getComments(Long cardId) {
+    // 전체 댓글 조회
+    public ResponseDataDto<List<CommentResponseDto>> getComments(Long cardId) {
         List<Comment> commentList = commentRepository.findAllByCardId(cardId);
         List<CommentResponseDto> commentResponseDtoList = commentList.stream()
-                .map(CommentResponseDto::new).toList();
-        return new ResponseDataDto(ResponseStatus.COMMENTS_READ_SUCCESS, commentResponseDtoList);
+                .map(CommentResponseDto::new)
+                .toList();
+        return new ResponseDataDto<>(ResponseStatus.COMMENTS_READ_SUCCESS, commentResponseDtoList);
     }
 
-    //댓글 수정
+    // 댓글 수정
     @Transactional
-    public ResponseDataDto updateComment(Long cardId, Long commentId, CommentRequestDto requestDto) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_COMMENT));
-        if(cardId != comment.getCard().getId()) {
-            throw new CustomException(ErrorType.NOT_FOUND_COMMENT_IN_CARD);
-        }
+    public ResponseDataDto<CommentResponseDto> updateComment(Long cardId, Long commentId, CommentRequestDto requestDto) {
+        Comment comment = getCommentByIdAndCardId(commentId, cardId);
         comment.updateDescription(requestDto.getDescription());
-        CommentResponseDto commentResponseDto = new CommentResponseDto(comment);
-        return new ResponseDataDto(ResponseStatus.COMMENT_UPDATE_SUCCESS, commentResponseDto);
+        return new ResponseDataDto<>(ResponseStatus.COMMENT_UPDATE_SUCCESS, new CommentResponseDto(comment));
     }
 
-    //댓글 삭제
+    // 댓글 삭제
     @Transactional
     public ResponseMessageDto deleteComment(Long cardId, Long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_COMMENT));
-        if(cardId != comment.getCard().getId()) {
-            throw new CustomException(ErrorType.NOT_FOUND_COMMENT_IN_CARD);
-        }
+        getCommentByIdAndCardId(commentId, cardId);
         commentRepository.deleteById(commentId);
         return new ResponseMessageDto(ResponseStatus.COMMENT_DELETE_SUCCESS);
     }
 
+    // 공통 메서드
+
+    // 카드 조회
+    private Card getCardById(Long cardId) {
+        return cardRepository.findById(cardId)
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARD));
+    }
+
+    // 댓글과 카드 검증 및 댓글 조회
+    private Comment getCommentByIdAndCardId(Long commentId, Long cardId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_COMMENT));
+        if (!cardId.equals(comment.getCard().getId())) {
+            throw new CustomException(ErrorType.NOT_FOUND_COMMENT_IN_CARD);
+        }
+        return comment;
+    }
 }
