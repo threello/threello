@@ -11,7 +11,7 @@ refreshToken: {{refreshToken}}
 
 
 ### boardId 설정
-@boardId = 2
+@boardId = 1
 ### 덱 생성
 POST http://localhost:8080/boards/{{boardId}}/decks
 Content-Type: application/json
@@ -155,7 +155,7 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "email": "hgh7546@naver.com"
+  "email": "user@naver.com"
 }
 
 ###카드 멤버 전체 조회

@@ -101,6 +101,7 @@ public class CardService {
     }
 
     // 카드 멤버 초대
+    @Transactional
     public ResponseMessageDto inviteCardMember(Long cardId, CardMemberRequestDto requestDto) {
         Card card = getCardById(cardId);
         String email = requestDto.getEmail();
