@@ -11,6 +11,7 @@ import com.sparta.threello.exception.CustomException;
 import com.sparta.threello.repository.DeckRepository;
 import com.sparta.threello.repository.board.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,121 +21,78 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class DeckService {
 
     private final DeckRepository deckRepository;
     private final BoardRepository boardRepository;
 
-    /** [createDeck()] 덱 생성
-     **/
+    /** [createDeck()] 덱 생성 **/
+    @Transactional
     public ResponseDataDto<DeckResponseDto> createDeck(long boardId, DeckRequestDto deckRequestDto, User loginUser) {
-
-        // 유저의 권한 확인 (UserType이 MANAGER만 생성가능)
         userAuthorityCheck(loginUser);
 
-        // 같은 보드에 상태 이름 중복 체크 (상태 이름이 존재하는 경우)
-        Optional<Board> board = boardRepository.findById(boardId);
-        if(deckRepository.findByTitleAndBoard(deckRequestDto.getTitle(), board.get()).isPresent()) {
-            throw new CustomException(ErrorType.ALREADY_EXIST_DECK_TITLE);
-        }
+        Board board = getBoard(boardId);
+        checkDeckTitleExists(deckRequestDto.getTitle(), board);
 
-        Deck deck = new Deck(deckRequestDto.getTitle(), deckRequestDto.getPosition(), boardRepository.findById(boardId));
-
+        Deck deck = new Deck(deckRequestDto.getTitle(), deckRequestDto.getPosition(), Optional.ofNullable(board));
         deckRepository.save(deck);
 
-        return new ResponseDataDto<>(ResponseStatus.DECK_CREATE_SUCCESS,
-                new DeckResponseDto(deck));
+        return new ResponseDataDto<>(ResponseStatus.DECK_CREATE_SUCCESS, new DeckResponseDto(deck));
     }
 
-    /** [getDeckList()] 덱 전체 조회
-     **/
-    public ResponseDataDto<Page<DeckResponseDto>> getDeckList(int page, int size, Long id) {
-        // 포지션 순으로 정렬
-        Sort.Direction direction = Sort.Direction.ASC;
-        Sort sort = Sort.by(direction, "position");
-        Pageable pageable = PageRequest.of(page, size, sort);
+    /** [getDeckList()] 덱 전체 조회 **/
+    public ResponseDataDto<Page<DeckResponseDto>> getDeckList(int page, int size, Long boardId) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "position"));
+        Page<DeckResponseDto> deckPage = deckRepository.findAllByBoardId(boardId, pageable)
+                .map(DeckResponseDto::new);
 
-        return new ResponseDataDto<>(ResponseStatus.DECKS_READ_SUCCESS,
-                deckRepository.findAllByBoardId(id, pageable).map(DeckResponseDto::new));
+        return new ResponseDataDto<>(ResponseStatus.DECKS_READ_SUCCESS, deckPage);
     }
 
-    /** [getDeck()] 덱 조회
-     **/
+    /** [getDeck()] 덱 조회 **/
     public ResponseDataDto<DeckResponseDto> getDeck(Long boardId, Long deckId) {
-
-        Deck deck = deckRepository.findByIdAndBoardId(deckId,boardId);
-
+        Deck deck = getDeckByIdAndBoardId(deckId, boardId);
         return new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS, new DeckResponseDto(deck));
     }
 
-    /** [updateDeck()] 덱 수정
-     **/
+    /** [updateDeck()] 덱 수정 **/
     @Transactional
     public ResponseDataDto<DeckResponseDto> updateDeck(Long boardId, Long deckId, DeckRequestDto requestDto) {
+        Deck deck = getDeckByIdAndBoardId(deckId, boardId);
 
-        Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
-
-        if (optionalDeck.isPresent()) {
-            Deck deck = optionalDeck.get();
-
-            // request로 title만 받아왔을 때 업데이트
-            if(null != requestDto.getTitle() && null == requestDto.getPosition()) {
-                deck.updateTitle(requestDto.getTitle());
-            }
-
-            deckRepository.save(deck);
-            return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
-
-        } else {
-            throw new CustomException(ErrorType.NOT_FOUND_DECK);
+        if (requestDto.getTitle() != null && requestDto.getPosition() == null) {
+            deck.updateTitle(requestDto.getTitle());
         }
+
+        deckRepository.save(deck);
+        return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
     }
 
-    /** [deleteDeck()] 덱 삭제
-     **/
+    /** [deleteDeck()] 덱 삭제 **/
     @Transactional
     public ResponseMessageDto deleteDeck(Long boardId, Long deckId, User loginUser) {
-
-        Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
-
-        // 유저의 권한 확인 (UserType이 MANAGER만 생성가능)
         userAuthorityCheck(loginUser);
+        Deck deck = getDeckByIdAndBoardId(deckId, boardId);
+        deckRepository.delete(deck);
 
-        if (optionalDeck.isPresent()) {
-            Deck deck = optionalDeck.get();
-            deckRepository.delete(deck);
-            return new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS);
-        } else {
-            throw new CustomException(ErrorType.NOT_FOUND_DECK);
-        }
+        return new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS);
     }
 
-    /** [updateDeck()] 덱 포지션 변경
-     **/
+    /** [updateDeckPosition()] 덱 포지션 변경 **/
     @Transactional
     public ResponseDataDto<DeckResponseDto> updateDeckPosition(Long boardId, Long deckId, DeckRequestDto requestDto, User loginUser) {
-
-        Optional<Deck> optionalDeck = Optional.ofNullable(deckRepository.findByIdAndBoardId(deckId, boardId));
-
-        // 유저의 권한 확인 (UserType이 MANAGER만 생성가능)
         userAuthorityCheck(loginUser);
+        Deck deck = getDeckByIdAndBoardId(deckId, boardId);
 
-        if (optionalDeck.isPresent()) {
-            Deck deck = optionalDeck.get();
-
-            // request로 position만 받아왔을 때 업데이트
-            if(null == requestDto.getTitle() && null != requestDto.getPosition()) {
-
-                deck.updatePosition(requestDto.getPosition());
-            }
-
-            deckRepository.save(deck);
-            return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
-        } else {
-            throw new CustomException(ErrorType.NOT_FOUND_DECK);
+        if (requestDto.getPosition() != null && requestDto.getTitle() == null) {
+            deck.updatePosition(requestDto.getPosition());
         }
+
+        deckRepository.save(deck);
+        return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
     }
 
     // 유저의 권한 확인 (UserType이 MANAGER만 생성가능)
@@ -142,5 +100,27 @@ public class DeckService {
         if (!UserType.MANAGER.equals(loginUser.getUserType())) {
             throw new CustomException(ErrorType.NOT_AVAILABLE_PERMISSION);
         }
+    }
+
+    // 보드 조회
+    private Board getBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_BOARD));
+    }
+
+    // 덱 타이틀 중복 체크
+    private void checkDeckTitleExists(String title, Board board) {
+        if (deckRepository.findByTitleAndBoard(title, board).isPresent()) {
+            throw new CustomException(ErrorType.ALREADY_EXIST_DECK_TITLE);
+        }
+    }
+
+    // 덱 조회
+    private Deck getDeckByIdAndBoardId(Long deckId, Long boardId) {
+        Deck deck = deckRepository.findByIdAndBoardId(deckId, boardId);
+        if (deck == null) {
+            throw new CustomException(ErrorType.NOT_FOUND_DECK);
+        }
+        return deck;
     }
 }
