@@ -51,6 +51,9 @@ public class Card extends Timestamped {
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CardMember> cardMembers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
     public Card(CreateCardRequestDto requestDto, Deck deck) {
 
         this.title = requestDto.getTitle();
