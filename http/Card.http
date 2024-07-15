@@ -19,8 +19,8 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title": "todo2",
-  "position": 2
+  "title": "5번 덱 제목",
+  "position": 5
 }
 
 
@@ -32,16 +32,16 @@ accessToken: {{accessToken}}
 refreshToken: {{refreshToken}}
 
 {
-  "title" : "2번덱 카드",
+  "title" : "4번덱 카드제목4",
   "cardStatus": "PROCESSING",
-  "position" : 3,
-  "dueAt": "2024-12-05"
+  "position" : 4,
+  "dueAt": "2024-03-01"
 
 }
 
 
 ###카드 전체 조회(덱별 카드조회)
-@deckId=1
+#@deckId=1
 GET http://localhost:8080/decks/{{deckId}}/cards
 Content-Type: application/json
 accessToken: {{accessToken}}
