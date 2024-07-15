@@ -1,14 +1,9 @@
 package com.sparta.threello.controller;
 
 
-import com.sparta.threello.dto.CardMemberRequestDto;
-import com.sparta.threello.dto.CreateCardRequestDto;
-import com.sparta.threello.dto.GetStatusCardRequestDto;
-import com.sparta.threello.dto.ResponseDataDto;
-import com.sparta.threello.dto.ResponseMessageDto;
-import com.sparta.threello.dto.UpdateCardPositionRequestDto;
-import com.sparta.threello.dto.UpdateCardRequestDto;
+import com.sparta.threello.dto.*;
 import com.sparta.threello.entity.User;
+import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.repository.cardRepository.CardRepository;
 import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.CardService;
@@ -30,14 +25,14 @@ public class CardController {
 
     //카드 생성
     @PostMapping("/decks/{deckId}/cards")
-    public ResponseEntity<ResponseDataDto> createCard(
+    public ResponseEntity<ResponseDataDto<CardResponseDto>> createCard(
             @PathVariable Long deckId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CreateCardRequestDto requestDto) {
         User user = userDetails.getUser();
-        ResponseDataDto responseDto = cardService.createCard(deckId, requestDto, user);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseDto);
+        CardResponseDto responseDto = cardService.createCard(deckId, requestDto, user);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.CARD_CREATE_SUCCESS, responseDto));
+
     }
 
     //카드 전체 조회(deck별)

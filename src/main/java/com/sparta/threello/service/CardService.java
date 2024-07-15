@@ -27,15 +27,14 @@ public class CardService {
 
     //카드 생성
     @Transactional
-    public ResponseDataDto<CardResponseDto> createCard(Long deckId, CreateCardRequestDto requestDto, User user) {
+    public CardResponseDto createCard(Long deckId, CreateCardRequestDto requestDto, User user) {
         Deck deck = getDeck(deckId);
 
         Card card = saveCard(requestDto, deck);
         addCardMember(card, user);
         saveCardDetail(card);
 
-        CardResponseDto responseDto = new CardResponseDto(card);
-        return new ResponseDataDto<>(ResponseStatus.CARD_CREATE_SUCCESS, responseDto);
+        return new CardResponseDto(card);
     }
 
     // 카드 전체 조회 (deck별)
