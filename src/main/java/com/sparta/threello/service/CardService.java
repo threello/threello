@@ -7,6 +7,7 @@ import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.exception.CustomException;
 import com.sparta.threello.repository.*;
 import java.util.List;
+import java.util.Objects;
 
 import com.sparta.threello.repository.cardRepository.CardRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,61 +40,55 @@ public class CardService {
 
     // 카드 전체 조회 (deck별)
     public List<CardResponseDto> getCards(Long deckId) {
-        List<Card> cardList = cardRepository.findAllByDeckIdOrderByPositionAsc(deckId);
-        List<CardResponseDto> cardResponseDataList = cardList.stream()
+        return cardRepository.findAllByDeckIdOrderByPositionAsc(deckId).stream()
                 .map(CardResponseDto::new)
                 .toList();
-        return cardResponseDataList;
     }
 
     // 특정 카드 조회
     public CardResponseDto getCard(Long cardId) {
-        Card card = getCardById(cardId);
-        CardResponseDto cardResponseDto = new CardResponseDto(card);
-        return cardResponseDto;
+        return new CardResponseDto(getCardById(cardId));
     }
 
     // 작업자별 카드 조회(덱별로)
     public List<CardResponseDto> getUserCards(Long deckId, Long userId) {
-        List<Card> cardList = cardRepository.findAllByDeckIdAndUserId(deckId, userId);
-        List<CardResponseDto> cardResponseDataList = cardList.stream()
+        return cardRepository.findAllByDeckIdAndUserId(deckId, userId).stream()
                 .map(CardResponseDto::new)
                 .toList();
-        return cardResponseDataList;
     }
 
-    // 상태별 카드 조회 JpaRepository 이용하여 포지션순으로 카드 정렬
+    // 상태별 카드 조회
     public ResponseDataDto<List<CardPerStatusResponseDto>> getStatusCards(Long deckId, GetStatusCardRequestDto requestDto) {
-        List<Card> cardList = cardRepository.findAllByCardStatusAndDeckIdOrderByPositionAsc(requestDto.getCardStatus(), deckId);
-        List<CardPerStatusResponseDto> cardResponseDataList = cardList.stream()
-                .map(CardPerStatusResponseDto::new)
-                .toList();
-        return new ResponseDataDto<>(ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS, cardResponseDataList);
+        return new ResponseDataDto<>(
+                ResponseStatus.CARDS_READ_BY_CARDSTATUS_SUCCESS,
+                cardRepository.findAllByCardStatusAndDeckIdOrderByPositionAsc(requestDto.getCardStatus(), deckId).stream()
+                        .map(CardPerStatusResponseDto::new)
+                        .toList()
+        );
     }
 
     // 카드 수정
     @Transactional
-    public ResponseDataDto<CardResponseDto> updateCard(Long cardId,
-                                                       UpdateCardRequestDto requestDto) {
+    public ResponseDataDto<CardResponseDto> updateCard(Long cardId, UpdateCardRequestDto requestDto) {
         Card card = getCardById(cardId);
+
         card.updateCard(requestDto);
+
         return new ResponseDataDto<>(ResponseStatus.CARD_UPDATE_SUCCESS, new CardResponseDto(card));
     }
 
     // 카드 포지션 변경
     @Transactional
-    public ResponseDataDto<UpdateCardPositionResponseDto> updateCardPosition(Long deckId,Long cardId,
-            UpdateCardPositionRequestDto requestDto) {
+    public ResponseDataDto<UpdateCardPositionResponseDto> updateCardPosition(Long deckId, Long cardId, UpdateCardPositionRequestDto requestDto) {
+
         Card card = getCardById(cardId);
 
-        verify(deckId,card);
+        verify(deckId, card);
 
-        Deck deck = getDeck(requestDto.getDeckId());
-        Long position=requestDto.getPosition();
-        card.updatePosition(deck,position);
+        Deck newDeck = getDeck(requestDto.getDeckId());
+        card.updatePosition(newDeck, requestDto.getPosition());
 
-        UpdateCardPositionResponseDto responseDto = new UpdateCardPositionResponseDto(card);
-        return new ResponseDataDto<>(ResponseStatus.CARD_POSITION_UPDATE_SUCCESS, responseDto);
+        return new ResponseDataDto<>(ResponseStatus.CARD_POSITION_UPDATE_SUCCESS, new UpdateCardPositionResponseDto(card));
     }
 
     // 카드 삭제
@@ -106,12 +101,9 @@ public class CardService {
     // 카드 멤버 초대
     public ResponseMessageDto inviteCardMember(Long cardId, CardMemberRequestDto requestDto) {
         Card card = getCardById(cardId);
-        String email = requestDto.getEmail();
-        User user = findUserByEmail(email);
+        User user = findUserByEmail(requestDto.getEmail());
 
-        //이미 초대된 사용자인지 확인
-        Boolean isAlreadyInvited =cardMemberRepository.existsCardMemberByCardIdAndUserId(cardId,user.getId());
-        if (isAlreadyInvited) {
+        if (cardMemberRepository.existsCardMemberByCardIdAndUserId(cardId, user.getId())) {
             throw new CustomException(ErrorType.ALREADY_INVITED_USER);
         }
 
@@ -121,20 +113,21 @@ public class CardService {
 
 
     // 카드 멤버 전체 조회
-    public ResponseDataDto getCardMembers(Long cardId) {
-        List<CardMember> cardMemberList = cardMemberRepository.findAllByCardId(cardId);
-        List<CardMemberResponseDto> cardMemberResponseDtoList = cardMemberList.stream()
-                .map(CardMemberResponseDto::new).toList();
-        return new ResponseDataDto(ResponseStatus.CARD_MEMBER_READS_SUCCESS,
-                cardMemberResponseDtoList);
+    public ResponseDataDto<List<CardMemberResponseDto>> getCardMembers(Long cardId) {
+        return new ResponseDataDto<>(
+                ResponseStatus.CARD_MEMBER_READS_SUCCESS,
+                cardMemberRepository.findAllByCardId(cardId).stream()
+                        .map(CardMemberResponseDto::new)
+                        .toList()
+        );
     }
 
     // 카드 멤버 삭제
     @Transactional
     public ResponseMessageDto deleteCardMember(Long cardId, Long cardMemberId) {
         CardMember cardMember = cardMemberRepository.findById(cardMemberId)
-                .orElseThrow(()-> new CustomException(ErrorType.NOT_FOUND_CARDMEMBER));
-        if(cardId != cardMember.getCard().getId()) {
+                .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARDMEMBER));
+        if (!Objects.equals(cardId, cardMember.getCard().getId())) {
             throw new CustomException(ErrorType.NOT_FOUND_CARDMEMBER_IN_CARD);
         }
         cardMemberRepository.deleteById(cardMemberId);
@@ -172,9 +165,9 @@ public class CardService {
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_USER));
     }
 
-    /*검증메서드*/
-    private void verify(Long deckId, Card card) throws CustomException{
-        if (deckId != card.getDeck().getId()) {
+    // 검증 메서드
+    private void verify(Long deckId, Card card) {
+        if (!Objects.equals(deckId, card.getDeck().getId())) {
             throw new CustomException(ErrorType.NOT_FOUND_CARD_IN_THE_DECK);
         }
     }
