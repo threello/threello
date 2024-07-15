@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -37,21 +39,21 @@ public class CardController {
 
     //카드 전체 조회(deck별)
     @GetMapping("/decks/{deckId}/cards")
-    public ResponseEntity<ResponseDataDto> getCards(@PathVariable Long deckId) {
-        return ResponseEntity.ok(cardService.getCards(deckId));
+    public ResponseEntity<ResponseDataDto<List<CardResponseDto>>> getCards(@PathVariable Long deckId) {
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.CARDS_READ_SUCCESS,cardService.getCards(deckId)));
     }
 
     //특정 카드 조회
     @GetMapping("/cards/{cardId}")
-    public ResponseEntity<ResponseDataDto> getCard(@PathVariable Long cardId) {
-        return ResponseEntity.ok(cardService.getCard(cardId));
+    public ResponseEntity<ResponseDataDto<CardResponseDto>> getCard(@PathVariable Long cardId) {
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.CARD_READ_SUCCESS,cardService.getCard(cardId)));
     }
 
     //작업자별 카드 조회(덱별)
     @GetMapping("/decks/{deckId}/cards/{userId}")
-    public ResponseEntity<ResponseDataDto> getUserCards(@PathVariable Long deckId,
+    public ResponseEntity<ResponseDataDto<List<CardResponseDto>>> getUserCards(@PathVariable Long deckId,
             @PathVariable Long userId) {
-        return ResponseEntity.ok(cardService.getUserCards(deckId, userId));
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS,cardService.getUserCards(deckId, userId)));
     }
 
     //상태별 카드 조회

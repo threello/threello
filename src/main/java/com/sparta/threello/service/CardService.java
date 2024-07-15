@@ -38,29 +38,28 @@ public class CardService {
     }
 
     // 카드 전체 조회 (deck별)
-    public ResponseDataDto<List<CardResponseDto>> getCards(Long deckId) {
+    public List<CardResponseDto> getCards(Long deckId) {
         List<Card> cardList = cardRepository.findAllByDeckIdOrderByPositionAsc(deckId);
         List<CardResponseDto> cardResponseDataList = cardList.stream()
                 .map(CardResponseDto::new)
                 .toList();
-        return new ResponseDataDto<>(ResponseStatus.CARDS_READ_SUCCESS, cardResponseDataList);
+        return cardResponseDataList;
     }
 
     // 특정 카드 조회
-    public ResponseDataDto<CardResponseDto> getCard(Long cardId) {
+    public CardResponseDto getCard(Long cardId) {
         Card card = getCardById(cardId);
         CardResponseDto cardResponseDto = new CardResponseDto(card);
-        return new ResponseDataDto<>(ResponseStatus.CARD_READ_SUCCESS, cardResponseDto);
+        return cardResponseDto;
     }
 
     // 작업자별 카드 조회(덱별로)
-    public ResponseDataDto<List<CardResponseDto>> getUserCards(Long deckId, Long userId) {
+    public List<CardResponseDto> getUserCards(Long deckId, Long userId) {
         List<Card> cardList = cardRepository.findAllByDeckIdAndUserId(deckId, userId);
         List<CardResponseDto> cardResponseDataList = cardList.stream()
                 .map(CardResponseDto::new)
                 .toList();
-        return new ResponseDataDto<>(ResponseStatus.CARDS_READ_BY_MEMBER_SUCCESS,
-                cardResponseDataList);
+        return cardResponseDataList;
     }
 
     // 상태별 카드 조회 JpaRepository 이용하여 포지션순으로 카드 정렬
