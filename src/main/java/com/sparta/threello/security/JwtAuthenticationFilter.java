@@ -10,7 +10,7 @@ import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.enums.UserStatus;
 import com.sparta.threello.enums.UserType;
 import com.sparta.threello.exception.CustomException;
-import com.sparta.threello.jwt.JwtUtil;
+import com.sparta.threello.jwt.JwtProvider;
 import com.sparta.threello.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,14 +24,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 
-//로그인 요청 처리 로직
+// 로그인 요청 처리 로직
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, UserRepository userRepository) {
+        this.jwtProvider = jwtProvider;
         this.userRepository = userRepository;
         setFilterProcessesUrl("/users/login"); //UsernamePasswordAuthenticationFilter을 상속 받으면 사용할수잇음
     }
@@ -68,20 +68,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String email = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         UserType userType = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserType();
 
-        String accessToken = jwtUtil.createToken(email, userType);
-        String refreshToken = jwtUtil.createRefreshToken(email, userType);
+        String accessToken = jwtProvider.createToken(email, userType);
+        String refreshToken = jwtProvider.createRefreshToken(email, userType);
 
         User userImpl = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
         userImpl.saveRefreshToken(refreshToken.substring(7));
         userRepository.save(userImpl);
 
-        response.addHeader(JwtUtil.AUTH_ACCESS_HEADER, accessToken);
-        response.addHeader(JwtUtil.AUTH_REFRESH_HEADER, refreshToken);
-        log.info("accessToken = " + accessToken);
-        log.info("refreshToken = " + refreshToken);
 
-        //http reqeust test를 위해 header에 토큰값을 추가하였습니다. http 테스트를 하지 않을 경우 주석해야합니다.
-        response.setHeader("Access-Control-Expose-Headers", "AccessToken, RefreshToken");
+        response.addHeader(JwtProvider.AUTH_ACCESS_HEADER, accessToken);
+        response.addHeader(JwtProvider.AUTH_REFRESH_HEADER, refreshToken);
+        log.info("accessToken = {}", accessToken);
+        log.info("refreshToken = {}", refreshToken);
+
 
         // 로그인 성공 메시지
         response.setContentType("application/json");

@@ -8,11 +8,9 @@ import com.sparta.threello.entity.User;
 import com.sparta.threello.enums.ErrorType;
 import com.sparta.threello.enums.UserStatus;
 import com.sparta.threello.exception.CustomException;
-import com.sparta.threello.jwt.JwtUtil;
+import com.sparta.threello.jwt.JwtProvider;
 import com.sparta.threello.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +22,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
 
     public void logout(User user, String accessToken, String refreshToken) {
         if (user == null) {
@@ -36,8 +34,8 @@ public class UserService {
         foundUser.saveRefreshToken("");
 
         //블랙리스트 추가
-        jwtUtil.addBlacklistToken(accessToken);
-        jwtUtil.addBlacklistToken(refreshToken);
+        jwtProvider.addBlacklistToken(accessToken);
+        jwtProvider.addBlacklistToken(refreshToken);
     }
 
     public SignupResponseDto signupUser(SignupRequestDto requestDto) {
