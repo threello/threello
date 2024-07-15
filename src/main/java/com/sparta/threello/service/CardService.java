@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CardService {
 
     private final CardRepository cardRepository;
@@ -47,7 +48,9 @@ public class CardService {
 
     // 특정 카드 조회
     public CardResponseDto getCard(Long cardId) {
-        return new CardResponseDto(getCardById(cardId));
+        Card card = getCardById(cardId);
+        CardResponseDto cardResponseDto = new CardResponseDto(card);
+        return cardResponseDto;
     }
 
     // 작업자별 카드 조회(덱별로)
@@ -69,18 +72,17 @@ public class CardService {
 
     // 카드 수정
     @Transactional
-    public ResponseDataDto<CardResponseDto> updateCard(Long cardId, UpdateCardRequestDto requestDto) {
+    public ResponseDataDto<CardResponseDto> updateCard(Long cardId,
+                                                       UpdateCardRequestDto requestDto) {
         Card card = getCardById(cardId);
-
         card.updateCard(requestDto);
-
         return new ResponseDataDto<>(ResponseStatus.CARD_UPDATE_SUCCESS, new CardResponseDto(card));
     }
 
     // 카드 포지션 변경
     @Transactional
-    public ResponseDataDto<UpdateCardPositionResponseDto> updateCardPosition(Long deckId, Long cardId, UpdateCardPositionRequestDto requestDto) {
-
+    public ResponseDataDto<UpdateCardPositionResponseDto> updateCardPosition(Long deckId,Long cardId,
+            UpdateCardPositionRequestDto requestDto) {
         Card card = getCardById(cardId);
 
         verify(deckId, card);
@@ -101,9 +103,12 @@ public class CardService {
     // 카드 멤버 초대
     public ResponseMessageDto inviteCardMember(Long cardId, CardMemberRequestDto requestDto) {
         Card card = getCardById(cardId);
-        User user = findUserByEmail(requestDto.getEmail());
+        String email = requestDto.getEmail();
+        User user = findUserByEmail(email);
 
-        if (cardMemberRepository.existsCardMemberByCardIdAndUserId(cardId, user.getId())) {
+        //이미 초대된 사용자인지 확인
+        Boolean isAlreadyInvited =cardMemberRepository.existsCardMemberByCardIdAndUserId(cardId,user.getId());
+        if (isAlreadyInvited) {
             throw new CustomException(ErrorType.ALREADY_INVITED_USER);
         }
 
@@ -145,17 +150,20 @@ public class CardService {
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARD));
     }
 
-    private Card saveCard(CreateCardRequestDto requestDto, Deck deck) {
+    @Transactional
+    protected Card saveCard(CreateCardRequestDto requestDto, Deck deck) {
         Card card = new Card(requestDto, deck);
         return cardRepository.save(card);
     }
 
-    private void addCardMember(Card card, User user) {
+    @Transactional
+    protected void addCardMember(Card card, User user) {
         CardMember cardMember = new CardMember(card, user);
         cardMemberRepository.save(cardMember);
     }
 
-    private void saveCardDetail(Card card) {
+    @Transactional
+    protected void saveCardDetail(Card card) {
         CardDetail cardDetail = new CardDetail(card);
         cardDetailRepository.save(cardDetail);
     }
