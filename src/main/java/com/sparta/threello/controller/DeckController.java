@@ -5,6 +5,7 @@ import com.sparta.threello.entity.Deck;
 import com.sparta.threello.enums.ResponseStatus;
 import com.sparta.threello.security.UserDetailsImpl;
 import com.sparta.threello.service.DeckService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class DeckController {
     @PostMapping
     public ResponseEntity<ResponseDataDto<DeckResponseDto>> createDeck(
             @PathVariable long boardId,
-            @RequestBody DeckRequestDto deckRequestDto,
+            @Valid @RequestBody DeckRequestDto deckRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         ResponseDataDto<DeckResponseDto> responseDto = deckService.createDeck(
                 boardId, deckRequestDto, userDetails.getUser());

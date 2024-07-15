@@ -66,6 +66,10 @@ public class DeckService {
         if (requestDto.getTitle() != null && requestDto.getPosition() == null) {
             deck.updateTitle(requestDto.getTitle());
         }
+        else if(requestDto.getTitle() == null) {
+            throw new NullPointerException("수정할 타이틀을 입력해주세요.");
+        }
+        else throw new IllegalArgumentException("컬럼의 위치는 변경할 수 없습니다.");
 
         deckRepository.save(deck);
         return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
@@ -90,6 +94,10 @@ public class DeckService {
         if (requestDto.getPosition() != null && requestDto.getTitle() == null) {
             deck.updatePosition(requestDto.getPosition());
         }
+        else if(requestDto.getPosition() == null) {
+            throw new NullPointerException("컬럼의 위치를 변경해주세요.");
+        }
+        else throw new IllegalArgumentException("타이틀은 변경할 수 없습니다.");
 
         deckRepository.save(deck);
         return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
