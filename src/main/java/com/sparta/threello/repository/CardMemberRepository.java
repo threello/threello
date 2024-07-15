@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface CardMemberRepository extends JpaRepository<CardMember, Long> {
 
     List<CardMember> findAllByCardId(Long cardId);
+    Boolean existsCardMemberByCardIdAndUserId(Long cardId, Long userId);
+
 }

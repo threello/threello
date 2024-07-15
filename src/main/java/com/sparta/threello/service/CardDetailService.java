@@ -3,6 +3,7 @@ package com.sparta.threello.service;
 
 import com.sparta.threello.dto.CardDetailRequestDto;
 import com.sparta.threello.dto.CardDetailResponseDto;
+import com.sparta.threello.dto.GetCardDetailResponseDto;
 import com.sparta.threello.dto.ResponseDataDto;
 import com.sparta.threello.dto.ResponseMessageDto;
 import com.sparta.threello.entity.Card;
@@ -27,7 +28,7 @@ public class CardDetailService {
     public ResponseDataDto getCardDetail(Long cardId) {
         CardDetail cardDetail = cardDetailRepository.findByCardId(cardId)
                 .orElseThrow(() -> new CustomException(ErrorType.NOT_FOUND_CARDDETAIL));
-        CardDetailResponseDto responseDto = new CardDetailResponseDto(cardDetail);
+        GetCardDetailResponseDto responseDto = new GetCardDetailResponseDto(cardDetail);
         return new ResponseDataDto(ResponseStatus.CARDDETAIL_READ_SUCCESS, responseDto);
     }
 
