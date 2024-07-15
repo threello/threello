@@ -31,6 +31,7 @@ public class Comment extends Timestamped{
         this.description = description;
         this.user = user;
         this.card = card;
+        card.getComments().add(this);
     }
 
     public void updateDescription(String description) {

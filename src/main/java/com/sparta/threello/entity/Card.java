@@ -51,11 +51,14 @@ public class Card extends Timestamped {
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CardMember> cardMembers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
     public Card(CreateCardRequestDto requestDto, Deck deck) {
 
         this.title = requestDto.getTitle();
         this.position = requestDto.getPosition();
-        this.cardStatus = requestDto.getCardStatus();
+        this.cardStatus = CardStatus.PROCESSING;
         this.deckTitle = deck.getTitle();
         this.dueAt = requestDto.getDueAt();
         this.deck = deck;
