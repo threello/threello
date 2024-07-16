@@ -29,7 +29,12 @@ public class DeckService {
     private final DeckRepository deckRepository;
     private final BoardRepository boardRepository;
 
-    /** [createDeck()] 덱 생성 **/
+    /** [createDeck()] 덱 생성
+     * @param boardId
+     * @param deckRequestDto
+     * @param loginUser
+     * @return status.code, message, deckResponseDto
+     **/
     @Transactional
     public ResponseDataDto<DeckResponseDto> createDeck(long boardId, DeckRequestDto deckRequestDto, User loginUser) {
         userAuthorityCheck(loginUser);
@@ -43,7 +48,13 @@ public class DeckService {
         return new ResponseDataDto<>(ResponseStatus.DECK_CREATE_SUCCESS, new DeckResponseDto(deck));
     }
 
-    /** [getDeckList()] 덱 전체 조회 **/
+    /** [getDeckList()] 덱 전체 조회
+     * * @param boardId
+     * @param page
+     * @param size
+     * @param boardId
+     * @return status.code, message, deckPage
+     **/
     public ResponseDataDto<Page<DeckResponseDto>> getDeckList(int page, int size, Long boardId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "position"));
         Page<DeckResponseDto> deckPage = deckRepository.findAllByBoardId(boardId, pageable)
@@ -52,21 +63,30 @@ public class DeckService {
         return new ResponseDataDto<>(ResponseStatus.DECKS_READ_SUCCESS, deckPage);
     }
 
-    /** [getDeck()] 덱 조회 **/
+    /** [getDeck()] 덱 조회
+     * @param deckId
+     * @param boardId
+     * @return status.code, message, deckResponseDto
+     **/
     public ResponseDataDto<DeckResponseDto> getDeck(Long boardId, Long deckId) {
         Deck deck = getDeckByIdAndBoardId(deckId, boardId);
         return new ResponseDataDto<>(ResponseStatus.DECK_READ_SUCCESS, new DeckResponseDto(deck));
     }
 
-    /** [updateDeck()] 덱 수정 **/
+    /** [updateDeck()] 덱 수정
+     * @param boardId
+     * @param deckId
+     * @param deckRequestDto
+     * @return status.code, message, deckResponseDto
+     **/
     @Transactional
-    public ResponseDataDto<DeckResponseDto> updateDeck(Long boardId, Long deckId, DeckRequestDto requestDto) {
+    public ResponseDataDto<DeckResponseDto> updateDeck(Long boardId, Long deckId, DeckRequestDto deckRequestDto) {
         Deck deck = getDeckByIdAndBoardId(deckId, boardId);
 
-        if (requestDto.getTitle() != null && requestDto.getPosition() == null) {
-            deck.updateTitle(requestDto.getTitle());
+        if (deckRequestDto.getTitle() != null && deckRequestDto.getPosition() == null) {
+            deck.updateTitle(deckRequestDto.getTitle());
         }
-        else if(requestDto.getTitle() == null) {
+        else if(deckRequestDto.getTitle() == null) {
             throw new NullPointerException("수정할 타이틀을 입력해주세요.");
         }
         else throw new IllegalArgumentException("컬럼의 위치는 변경할 수 없습니다.");
@@ -75,7 +95,12 @@ public class DeckService {
         return new ResponseDataDto<>(ResponseStatus.DECK_UPDATE_SUCCESS, new DeckResponseDto(deck));
     }
 
-    /** [deleteDeck()] 덱 삭제 **/
+    /** [deleteDeck()] 덱 삭제
+     * @param boardId
+     * @param deckId
+     * @param loginUser
+     * @return status.code, message,
+     **/
     @Transactional
     public ResponseMessageDto deleteDeck(Long boardId, Long deckId, User loginUser) {
         userAuthorityCheck(loginUser);
@@ -85,16 +110,21 @@ public class DeckService {
         return new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS);
     }
 
-    /** [updateDeckPosition()] 덱 포지션 변경 **/
+    /** [updateDeckPosition()] 덱 포지션 변경
+     * @param boardId
+     * @param deckId
+     * @param deckRequestDto
+     * @param loginUser
+     **/
     @Transactional
-    public ResponseDataDto<DeckResponseDto> updateDeckPosition(Long boardId, Long deckId, DeckRequestDto requestDto, User loginUser) {
+    public ResponseDataDto<DeckResponseDto> updateDeckPosition(Long boardId, Long deckId, DeckRequestDto deckRequestDto, User loginUser) {
         userAuthorityCheck(loginUser);
         Deck deck = getDeckByIdAndBoardId(deckId, boardId);
 
-        if (requestDto.getPosition() != null && requestDto.getTitle() == null) {
-            deck.updatePosition(requestDto.getPosition());
+        if (deckRequestDto.getPosition() != null && deckRequestDto.getTitle() == null) {
+            deck.updatePosition(deckRequestDto.getPosition());
         }
-        else if(requestDto.getPosition() == null) {
+        else if(deckRequestDto.getPosition() == null) {
             throw new NullPointerException("컬럼의 위치를 변경해주세요.");
         }
         else throw new IllegalArgumentException("타이틀은 변경할 수 없습니다.");

@@ -91,7 +91,7 @@ public class DeckController {
             @PathVariable Long boardId,
             @PathVariable Long deckId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ResponseMessageDto responseDto = deckService.deleteDeck(boardId, deckId, userDetails.getUser());
+        deckService.deleteDeck(boardId, deckId, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.DECK_DELETE_SUCCESS));
     }
 

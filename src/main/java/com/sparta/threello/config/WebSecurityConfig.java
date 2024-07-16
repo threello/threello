@@ -1,7 +1,8 @@
 package com.sparta.threello.config;
 
 
-import com.sparta.threello.jwt.JwtUtil;
+import com.sparta.threello.enums.UserType;
+import com.sparta.threello.jwt.JwtProvider;
 import com.sparta.threello.repository.UserRepository;
 import com.sparta.threello.security.*;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,13 +25,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final UserRepository userRepository;
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,14 +44,14 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, userRepository);
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtProvider, userRepository);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthorizationFilter(jwtProvider, userDetailsService);
     }
 
     @Bean
@@ -61,7 +62,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 설정
-        http.csrf((csrf) -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
 
         // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement((sessionManagement) ->
@@ -72,9 +73,20 @@ public class WebSecurityConfig {
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/").permitAll() // 요청 허가
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/users/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/boards").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/boards/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/boards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/boards/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/boards/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/boards/**/invite").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/columns/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/columns/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/columns/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/columns/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.GET, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.PUT, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers(HttpMethod.DELETE, "/cards/**").hasAnyRole("MANAGER", "USER")
+                        .requestMatchers("/users/**").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
