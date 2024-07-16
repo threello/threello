@@ -1,5 +1,6 @@
 package com.sparta.threello.service;
 
+import com.sparta.threello.dto.BoardMemberResponseDto;
 import com.sparta.threello.dto.BoardRequestDto;
 import com.sparta.threello.dto.BoardResponseDto;
 import com.sparta.threello.dto.InviteRequestDto;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.sparta.threello.entity.QBoardMember.boardMember;
 
@@ -193,5 +195,18 @@ public class BoardService {
         if (loginUser.getUserType().equals(UserType.USER)) {
             throw new CustomException(ErrorType.NOT_AVAILABLE_PERMISSION);
         }
+    }
+
+    public List<BoardMemberResponseDto> getBoardMembers(Long boardId) {
+        List<BoardMember> boardMembers = boardMemberRepository.findBoardMemberByBoardId(boardId);
+
+        // User 정보를 가져와서 BoardMemberResponseDto에 추가
+        List<BoardMemberResponseDto> responseDtos = boardMembers.stream().map(boardMember -> {
+            Long userId = boardMember.getUser().getId();
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            return new BoardMemberResponseDto(boardId, user.getEmail());
+        }).collect(Collectors.toList());
+
+        return responseDtos;
     }
 }

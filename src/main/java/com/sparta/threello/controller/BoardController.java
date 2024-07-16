@@ -97,4 +97,15 @@ public class BoardController {
         boardService.inviteBoardMember(boardId, requestDto, userDetails.getUser());
         return ResponseEntity.ok(new ResponseMessageDto(ResponseStatus.BOARD_INVITE_MEMBER_SUCCESS));
     }
+
+    /**
+     * [getBoardMembers] 보드 초대하기
+     * @param boardId     보드 아이디
+     * @return status.code, message
+     **/
+    @GetMapping("/{boardId}/invite")
+    public ResponseEntity<ResponseDataDto<List<BoardMemberResponseDto>>> getBoardMembers(@PathVariable Long boardId) {
+        List<BoardMemberResponseDto> responseDto = boardService.getBoardMembers(boardId);
+        return ResponseEntity.ok(new ResponseDataDto<>(ResponseStatus.BOARD_READ_MEMBER_SUCCESS, responseDto));
+    }
 }

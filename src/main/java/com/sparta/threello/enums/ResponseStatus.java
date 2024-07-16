@@ -24,6 +24,7 @@ public enum ResponseStatus {
     BOARD_DELETE_SUCCESS(HttpStatus.OK, "보드가 삭제되었습니다."),
     BOARD_POSITION_UPDATE_SUCCESS(HttpStatus.OK, "보드 포지션 변경에 성공하였습니다."),
     BOARD_INVITE_MEMBER_SUCCESS(HttpStatus.OK, "보드에 사용자 초대가 완료되었습니다."),
+    BOARD_READ_MEMBER_SUCCESS(HttpStatus.OK, "보드에 초대된 멤버 조회가 완료되었습니다."),
 
     // 덱(컬럼)
     DECK_CREATE_SUCCESS(HttpStatus.OK, "컬럼 생성에 성공하였습니다."),
