@@ -1,7 +1,6 @@
 package com.sparta.threello.entity;
 
 import com.sparta.threello.dto.SignupRequestDto;
-import com.sparta.threello.dto.SignupResponseDto;
 import com.sparta.threello.enums.UserStatus;
 import com.sparta.threello.enums.UserType;
 import jakarta.persistence.*;
@@ -29,6 +28,9 @@ public class User extends Timestamped{
 
     @Column(nullable = false)
     private String password;
+
+    @Version
+    private Long version;
 
     @Setter
     @Column

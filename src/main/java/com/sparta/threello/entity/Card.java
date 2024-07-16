@@ -6,6 +6,7 @@ import com.sparta.threello.enums.CardStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -39,12 +40,19 @@ public class Card extends Timestamped {
     @Column
     private LocalDate dueAt;
 
+    @Version
+    private Long version;
+
     //Deck 과 join
     @ManyToOne
     @JoinColumn(name = "deck_id", nullable = false)
     private Deck deck;
 
+    /*
+     * 연관관계 편의 메서드
+     * */
     //CardDetail 과 join
+    @Setter
     @OneToOne(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
     private CardDetail cardDetail;
 
@@ -64,14 +72,6 @@ public class Card extends Timestamped {
         this.deck = deck;
     }
 
-//    public Card(String title, Long position, CardStatus cardStatus, Deck deck) {
-//        this.title = title;
-//        this.position = position;
-//        this.cardStatus = cardStatus;
-//        this.deckTitle = deck.getTitle();
-//        this.deck = deck;
-//    }
-
     public void updateCard(UpdateCardRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.cardStatus = requestDto.getCardStatus();
@@ -82,13 +82,6 @@ public class Card extends Timestamped {
         setDeck(deck);
         this.position = position;
 
-    }
-
-    /*
-     * 연관관계 편의 메서드
-     * */
-    public void setCardDetail(CardDetail cardDetail) {
-        this.cardDetail = cardDetail;
     }
 
     public void setDeck(Deck deck) {
